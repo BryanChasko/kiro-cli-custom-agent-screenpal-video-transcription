@@ -1,0 +1,94 @@
+{
+  "name": "screenpal-video-transcriber",
+  "description": "Specialized agent for processing ScreenPal videos with audio transcription and visual analysis using local AI models",
+  "prompt": "You are a specialized video transcription agent that processes ScreenPal videos to generate comprehensive audio transcripts and visual descriptions. You use local AI models to ensure complete privacy - no data leaves the local environment. Your primary tasks are: 1) Validate ScreenPal URLs, 2) Extract and transcribe audio using Whisper, 3) Analyze visual content using local VLMs, 4) Generate timestamped transcripts with visual context markers, 5) Store structured output locally. Always prioritize accuracy and maintain temporal context between audio and visual elements.",
+  "mcpServers": {
+    "video-transcriber": {
+      "command": "uvx",
+      "args": ["video-transcriber-mcp"],
+      "env": {
+        "WHISPER_MODEL": "base",
+        "YOUTUBE_FORMAT": "bestaudio",
+        "WHISPER_DEVICE": "cpu"
+      },
+      "timeout": 300000
+    },
+    "vision-analysis": {
+      "command": "uvx",
+      "args": ["mcp-vision-analysis"],
+      "env": {
+        "OLLAMA_API_ENDPOINT": "http://localhost:11434",
+        "VLM_MODEL": "moondream2",
+        "SCENE_THRESHOLD": "0.4",
+        "MAX_FRAMES": "50"
+      },
+      "timeout": 180000
+    }
+  },
+  "tools": [
+    "fs_read",
+    "fs_write",
+    "knowledge",
+    "@video-transcriber/transcribe_video",
+    "@video-transcriber/extract_audio",
+    "@video-transcriber/get_video_info",
+    "@vision-analysis/analyze_frames",
+    "@vision-analysis/detect_scene_changes",
+    "@vision-analysis/compare_frames",
+    "@vision-analysis/extract_keyframes"
+  ],
+  "allowedTools": [
+    "fs_read",
+    "knowledge",
+    "@video-transcriber/get_video_info",
+    "@vision-analysis/extract_keyframes"
+  ],
+  "toolsSettings": {
+    "fs_write": {
+      "allowedPaths": [
+        "transcripts/**",
+        "output/**",
+        "temp/**"
+      ]
+    },
+    "@video-transcriber/transcribe_video": {
+      "maxDuration": 3600,
+      "allowedDomains": ["go.screenpal.com", "screenpal.com"]
+    },
+    "@vision-analysis/analyze_frames": {
+      "maxFrames": 100,
+      "allowedFormats": ["png", "jpg", "jpeg"]
+    }
+  },
+  "resources": [
+    "file://knowledge/transcription-tools/**/*.md",
+    "file://knowledge/workflow-automation/**/*.md",
+    "file://knowledge/best-practices/**/*.md",
+    "file://README.md"
+  ],
+  "hooks": {
+    "agentSpawn": [
+      {
+        "command": "echo 'ScreenPal Video Transcriber Agent initialized. Checking MCP server status...'"
+      }
+    ],
+    "preToolUse": [
+      {
+        "matcher": "@video-transcriber/transcribe_video",
+        "command": "echo 'Starting video transcription process...'"
+      },
+      {
+        "matcher": "@vision-analysis/*",
+        "command": "echo 'Initiating visual analysis...'"
+      }
+    ],
+    "postToolUse": [
+      {
+        "matcher": "fs_write",
+        "command": "echo 'Output saved to local storage'"
+      }
+    ]
+  },
+  "includeMcpJson": false,
+  "model": "claude-sonnet-4"
+}
