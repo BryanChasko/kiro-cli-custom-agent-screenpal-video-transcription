@@ -200,6 +200,24 @@ See `docs/MCP-CONFIGURATION.md` for detailed configuration guide.
 - **Local Storage**: Structured output for knowledge base integration
 - **Privacy Focused**: No data leaves your local environment
 
+## Troubleshooting
+
+### Common Issues
+
+**"dummy" tool error**: MCP server communication failure
+- **Solution**: Restart agent session: `kiro-cli chat --agent screenpal-video-transcriber`
+- **Root cause**: MCP servers not properly registering tools with Kiro CLI
+
+**Tool not found**: Missing dependencies or configuration issues  
+- **Solution**: Run setup script: `./setup.pl`
+- **Check**: Verify yt-dlp and Whisper are installed
+
+**Ollama not responding**: Vision analysis unavailable
+- **Solution**: Start Ollama: `ollama serve` or check Docker container
+- **Verify**: `curl -s http://localhost:11434/api/tags`
+
+See [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for complete troubleshooting guide.
+
 ## Documentation
 
 - **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System design and component overview

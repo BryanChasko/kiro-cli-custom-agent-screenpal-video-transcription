@@ -64,6 +64,19 @@ docker exec ollama-screenpal ollama pull moondream
 curl -s http://localhost:11434/api/tags | grep moondream
 ```
 
+### Error: "dummy" tool or MCP communication failure
+
+**Cause**: MCP servers not properly registering tools with Kiro CLI
+
+**Solution**:
+1. **Restart agent session**: Exit and relaunch agent to reset MCP connections
+2. **Kill orphaned processes**: `pkill -f "video-transcriber-mcp\|moondream-mcp"`
+3. **Check for multiple instances**: `ps aux | grep -E "(video-transcriber|moondream)"`
+4. **Verify MCP server startup**: Look for initialization errors in logs
+5. **Test protocol stream**: `node /tmp/video-transcriber-mcp/dist/index.js 2>/dev/null | head -c 1` should output `{`
+
+**Root cause**: The "dummy" tool is a fallback when real tools can't be reached due to stdio communication breakdown.
+
 ## Dependency Issues
 
 ### Error: "yt-dlp: command not found"
@@ -86,15 +99,18 @@ curl -s http://localhost:11434/api/tags | grep moondream
 
 ## Agent Issues
 
-### Error: "Tool not found"
+### Error: "Tool not found" or "No tool with 'dummy' is found"
 
-**Cause**: Tool not in `allowedTools` or server not configured
+**Cause**: MCP server communication failure or tool registration issue
 
 **Solution**:
-1. Check agent config: `cat ~/.kiro/agents/screenpal-video-transcriber.json | jq .allowedTools`
-2. Verify tool name matches exactly
-3. Check `includeMcpJson: true` is set
-4. Verify global config has the server
+1. Restart agent session: Exit and relaunch `kiro-cli chat --agent screenpal-video-transcriber`
+2. Kill orphaned MCP processes: `pkill -f "video-transcriber-mcp\|moondream-mcp"`
+3. Check MCP server status: `ps aux | grep -E "(video-transcriber|moondream)"`
+4. Verify tool registration in agent logs
+5. Check `allowedTools` in agent configuration if issue persists
+
+**Note**: The "dummy" tool error indicates MCP servers aren't properly communicating with Kiro CLI, not a missing tool.
 
 ### Error: "Agent failed to initialize"
 
@@ -278,6 +294,7 @@ node /tmp/video-transcriber-mcp/dist/index.js 2>&1 | head -c 50
 | Issue | Solution |
 |-------|----------|
 | MCP won't connect | Test protocol stream, check for console.log() |
+| "dummy" tool error | Restart agent session, kill orphaned MCP processes |
 | Tool not found | Check allowedTools, verify includeMcpJson |
 | Ollama not responding | Start Ollama, check port 11434 |
 | Video extraction fails | Verify URL, run ./setup.pl for yt-dlp |
