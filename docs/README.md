@@ -34,7 +34,7 @@ Agents can restrict which tools they're allowed to use via `allowedTools`. This 
 
 | Need | Document |
 |------|----------|
-| Link custom agent | AGENT-SETUP-GUIDE.md |
+| Agent setup and usage | AGENT-SETUP-GUIDE.md |
 | Quick commands | QUICK-REFERENCE.md |
 | How it all works | KIRO-CLI-INTEGRATION.md |
 | System design | ARCHITECTURE.md |

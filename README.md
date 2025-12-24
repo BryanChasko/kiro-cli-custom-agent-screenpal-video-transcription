@@ -95,17 +95,22 @@ chmod +x setup.pl
 
 The setup script will:
 1. Verify Kiro CLI installation
-2. Build MCP servers from source
-3. Setup Ollama with Moondream model
-4. Configure global MCP settings (`~/.kiro/settings/mcp.json`)
+2. Install yt-dlp for video extraction
+3. Build MCP servers from source
+4. Setup Ollama with Moondream model
+5. Configure global MCP settings (`~/.kiro/settings/mcp.json`)
 5. Create agent profile (`~/.kiro/agents/screenpal-video-transcriber.json`)
 6. Verify all components
 
 ### Launch the Agent
 
+**From the project directory:**
 ```bash
+cd /path/to/kiro-cli-custom-agent-screenpal-video-transcription
 kiro-cli chat --agent screenpal-video-transcriber
 ```
+
+**Note**: The agent is automatically discovered when you're in the project directory. No global linking required.
 
 ### Process a Video
 

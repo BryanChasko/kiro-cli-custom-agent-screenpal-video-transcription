@@ -486,20 +486,18 @@ node /tmp/moondream-mcp/build/index.js 2>/dev/null | head -c 1
 }
 ```
 
-## Agent Linking and Discovery
+## Agent Discovery
 
-### Making Custom Agents Available Globally
+### Workspace-Based Agent Discovery
 
-Kiro CLI discovers agents from the global agents directory: `~/.kiro/agents/`
+Kiro CLI automatically discovers agents in the current workspace without requiring global configuration.
 
-To make a project-specific agent available globally:
+**How it works**:
+1. Kiro CLI scans the current directory for `.kiro/agents/` folder
+2. Loads and validates each agent configuration  
+3. Makes agents available via `--agent` flag when in the project directory
 
-```bash
-# Create symbolic link from global agents directory to project agent
-ln -sf "/path/to/project/.kiro/agents/agent-name.json" "~/.kiro/agents/agent-name.json"
-```
-
-### Example: ScreenPal Agent Linking
+### Example: ScreenPal Agent Discovery
 
 **Project Structure**:
 ```
@@ -509,58 +507,24 @@ ln -sf "/path/to/project/.kiro/agents/agent-name.json" "~/.kiro/agents/agent-nam
         └── screenpal-video-transcriber.json
 ```
 
-**Linking Command**:
+**Usage**:
 ```bash
-ln -sf "/Users/bryanchasko/Code/kiro-cli-custom-agent-screenpal-video-transcription/.kiro/agents/screenpal-video-transcriber.json" "/Users/bryanchasko/.kiro/agents/screenpal-video-transcriber.json"
-```
+# Navigate to project directory
+cd /Users/bryanchasko/Code/kiro-cli-custom-agent-screenpal-video-transcription
 
-**Verification**:
-```bash
-# Check link exists
-ls -la ~/.kiro/agents/screenpal-video-transcriber.json
+# Agent is automatically discovered
+kiro-cli chat --agent screenpal-video-transcriber
+```
 
 # Should show:
-# lrwxr-xr-x 1 user staff 121 Dec 24 20:37 screenpal-video-transcriber.json -> /Users/.../screenpal-video-transcriber.json
 ```
 
-### Agent Discovery Process
+### Benefits of Workspace Discovery
 
-1. **Scan Global Directory**: Kiro CLI scans `~/.kiro/agents/` for `.json` files
-2. **Load Agent Configs**: Each JSON file is loaded as an agent configuration
-3. **Validate Schema**: Agent configs are validated against the expected schema
-4. **Make Available**: Valid agents become available via `--agent` flag
-
-### Using Linked Agents
-
-```bash
-# Use your custom agent
-kiro-cli chat --agent screenpal-video-transcriber
-
-# List all available agents
-kiro-cli agents list
-
-# View agent configuration
-kiro-cli agents show screenpal-video-transcriber
-```
-
-### Benefits of Symbolic Linking
-
-- **Single Source of Truth**: Agent config stays in project directory
+- **No Setup Required**: Agents work immediately in project directory
 - **Version Control**: Agent config is versioned with project code
-- **Global Access**: Agent available from any directory
-- **Easy Updates**: Changes to project agent automatically reflected globally
-- **No Duplication**: No need to maintain separate copies
-
-### Alternative: Direct Copy (Not Recommended)
-
-```bash
-# This creates a copy, not a link
-cp "/path/to/project/.kiro/agents/agent.json" "~/.kiro/agents/agent.json"
-
-# Problems:
-# - Creates duplicate that can get out of sync
-# - Changes to project agent not reflected globally
-# - Must manually update both copies
-```
+- **No Conflicts**: Different projects can have different agent versions
+- **Automatic Updates**: Changes to project agent are immediately available
+- **Clean Separation**: No global state to manage
 
 See `docs/MCP-CONFIGURATION.md` for more details.

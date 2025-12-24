@@ -4,10 +4,9 @@ Quick reference for understanding how the default Kiro CLI agent and the screenp
 
 ## Quick Start
 
-### 1. Link Agent Globally
+### 1. Navigate to Project Directory
 ```bash
-# Make agent available from any directory
-ln -sf "/Users/bryanchasko/Code/kiro-cli-custom-agent-screenpal-video-transcription/.kiro/agents/screenpal-video-transcriber.json" "/Users/bryanchasko/.kiro/agents/screenpal-video-transcriber.json"
+cd /Users/bryanchasko/Code/kiro-cli-custom-agent-screenpal-video-transcription
 ```
 
 ### 2. Launch Default Agent
@@ -22,8 +21,9 @@ kiro-cli chat
 ```bash
 kiro-cli chat --agent screenpal-video-transcriber
 ```
-- Uses all global MCP servers (inherited)
-- Restricted tool access via `allowedTools`
+- Uses all global MCP servers (inherited via `includeMcpJson: true`)
+- Full video transcription tool access
+- Specialized for ScreenPal video processing
 - Specialized for video transcription
 
 ## Configuration Files
@@ -238,36 +238,31 @@ cat ~/.kiro/agents/screenpal-video-transcriber.json | jq .mcpServers
 1. Add tool to `allowedTools` if needed
 2. Use default agent if full access required
 
-## Agent Linking Setup
+## Agent Discovery
 
-### Making Custom Agents Globally Available
+### Workspace-Based Agent Discovery
 
-Custom agents must be linked to the global agents directory to be discoverable by Kiro CLI.
+Kiro CLI automatically discovers agents in the current workspace without requiring global linking.
 
-**Command**:
+**How it works**:
+1. Kiro CLI scans the current directory for `.kiro/agents/` folder
+2. Loads and validates each agent configuration
+3. Makes agents available via `--agent` flag when in the project directory
+
+**Usage**:
 ```bash
-ln -sf "/Users/bryanchasko/Code/kiro-cli-custom-agent-screenpal-video-transcription/.kiro/agents/screenpal-video-transcriber.json" "/Users/bryanchasko/.kiro/agents/screenpal-video-transcriber.json"
-```
+# Navigate to project directory
+cd /path/to/kiro-cli-custom-agent-screenpal-video-transcription
 
-**Verification**:
-```bash
-# Check link exists
-ls -la ~/.kiro/agents/screenpal-video-transcriber.json
-
-# Should show symbolic link pointing to project directory
+# Agent is automatically available
+kiro-cli chat --agent screenpal-video-transcriber
 ```
 
 **Benefits**:
+- No global linking required
 - Agent config stays in project (version controlled)
-- Available globally from any directory
-- Single source of truth (no duplication)
-- Automatic updates when project config changes
-
-### Agent Discovery Process
-
-1. Kiro CLI scans `~/.kiro/agents/` for `.json` files
-2. Loads and validates each agent configuration
-3. Makes valid agents available via `--agent` flag
+- No conflicts between different agent versions
+- Automatic discovery when in project directory
 4. Symbolic links are followed to actual config files
 
 ## Best Practices
@@ -278,7 +273,7 @@ ls -la ~/.kiro/agents/screenpal-video-transcriber.json
 4. **Document custom agents** - Explain why restrictions exist
 5. **Test both agents** - Ensure changes don't break either
 6. **Use agent profiles** - Don't modify global config for agent-specific needs
-7. **Link, don't copy** - Use symbolic links to maintain single source of truth
+7. **Work from project directory** - Agents are automatically discovered in workspace
 
 ## See Also
 
