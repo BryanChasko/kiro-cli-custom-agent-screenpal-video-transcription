@@ -64,6 +64,26 @@ docker exec ollama-screenpal ollama pull moondream
 curl -s http://localhost:11434/api/tags | grep moondream
 ```
 
+## Dependency Issues
+
+### Error: "yt-dlp: command not found"
+
+**Cause**: yt-dlp not installed
+
+**Solution**:
+1. Run setup script: `./setup.pl` (automatically installs yt-dlp)
+2. Or install manually: `brew install yt-dlp`
+3. Verify: `yt-dlp --version`
+
+### Error: "whisper: command not found"
+
+**Cause**: OpenAI Whisper not installed
+
+**Solution**:
+1. Run setup script: `./setup.pl` (automatically installs Whisper)
+2. Or install manually: `brew install openai-whisper`
+3. Verify: `whisper --help`
+
 ## Agent Issues
 
 ### Error: "Tool not found"
@@ -102,18 +122,19 @@ node /tmp/moondream-mcp/build/index.js 2>/dev/null | head -c 50
 **Solution**:
 1. Verify URL is valid and accessible
 2. Check yt-dlp is installed: `yt-dlp --version`
-3. Update yt-dlp: `pip install --upgrade yt-dlp`
+3. If missing, run setup script: `./setup.pl`
 4. Test directly: `yt-dlp -j "https://go.screenpal.com/..."`
 
 ### Error: "Whisper transcription failed"
 
-**Cause**: Audio format issue or model problem
+**Cause**: Whisper not installed or audio format issue
 
 **Solution**:
-1. Check Whisper model is downloaded
-2. Verify audio file exists: `ls -la temp/`
-3. Test Whisper directly: `whisper temp/audio.wav --model base`
-4. Check disk space: `df -h`
+1. Check Whisper is installed: `whisper --help`
+2. If missing, run setup script: `./setup.pl`
+3. Verify audio file exists: `ls -la temp/`
+4. Test Whisper directly: `whisper temp/audio.wav --model base`
+5. Check disk space: `df -h`
 
 ### Error: "Vision analysis timeout"
 
@@ -211,11 +232,11 @@ node /tmp/moondream-mcp/build/index.js 2>/dev/null | head -c 50
 # Test Ollama
 curl -s http://localhost:11434/api/tags
 
-# Test yt-dlp
+# Test yt-dlp (should be installed by setup.pl)
 yt-dlp --version
 
-# Test Whisper
-whisper --version
+# Test Whisper (should be installed by setup.pl)
+whisper --help | head -1
 
 # Test FFmpeg
 ffmpeg -version
@@ -259,7 +280,7 @@ node /tmp/video-transcriber-mcp/dist/index.js 2>&1 | head -c 50
 | MCP won't connect | Test protocol stream, check for console.log() |
 | Tool not found | Check allowedTools, verify includeMcpJson |
 | Ollama not responding | Start Ollama, check port 11434 |
-| Video extraction fails | Verify URL, update yt-dlp |
+| Video extraction fails | Verify URL, run ./setup.pl for yt-dlp |
 | Transcription slow | Use smaller model, enable GPU |
 | Memory issues | Close apps, use smaller models |
 | Configuration error | Validate JSON, check paths |

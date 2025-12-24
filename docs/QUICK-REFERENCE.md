@@ -12,11 +12,18 @@
 ## Common Commands
 
 ```bash
+# Setup (installs yt-dlp, Whisper, builds MCP servers)
+./setup.pl
+
 # Launch agent
 kiro-cli chat --agent screenpal-video-transcriber
 
 # Enable trace logging
 KIRO_LOG_LEVEL=trace kiro-cli chat --agent screenpal-video-transcriber
+
+# Test dependencies
+yt-dlp --version
+whisper --help | head -1
 
 # Test MCP servers
 node /tmp/video-transcriber-mcp/dist/index.js --help
