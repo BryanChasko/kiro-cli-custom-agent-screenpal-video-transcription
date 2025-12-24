@@ -2,13 +2,45 @@
 
 This repository contains a Kiro CLI custom agent specialized in processing ScreenPal video links to generate comprehensive audio transcripts and visual descriptions using local AI models.
 
+            ___
+           / _ \
+          | / \ |
+          | \_/ |
+           \___/ ___
+           _|_|_/[_]\__==_
+          [---------------]
+          | O   /---\     |
+          |    |     |    |
+          |     \___/     |
+          [---------------]
+                [___]
+                 | |\\
+                 | | \\
+                 [ ]  \\_
+                /|_|\  ( \
+               //| |\\  \ \
+              // | | \\  \ \
+             //  |_|  \\  \_\
+            //   | |   \\
+           //\   | |   /\\
+          //  \  | |  /  \\
+         //    \ | | /    \\
+        //      \|_|/      \\
+       //        [_]        \\
+      //          H          \\
+     //           H           \\
+    //            H            \\
+   //             H             \\
+  //              H              \\
+ //                               \\
+//                                 \\
+
 ## Purpose
 
 The screenpal-video-transcriber agent provides:
 - **Audio Transcription**: Extract and transcribe speech using OpenAI Whisper
 - **Visual Analysis**: Generate semantic descriptions of screen content using local VLMs
 - **Temporal Context**: Track visual changes and insert contextual markers
-- **Privacy-First**: Complete local processing with no cloud dependencies
 
 ## Architecture
 

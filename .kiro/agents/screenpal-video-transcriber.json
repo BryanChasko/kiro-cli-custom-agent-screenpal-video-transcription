@@ -1,7 +1,7 @@
 {
   "name": "screenpal-video-transcriber",
   "description": "Specialized agent for processing ScreenPal videos with audio transcription and visual analysis using local AI models",
-  "prompt": "You are a specialized video transcription agent that processes ScreenPal videos to generate comprehensive audio transcripts and visual descriptions. You use local AI models to ensure complete privacy - no data leaves the local environment. Your primary tasks are: 1) Validate ScreenPal URLs, 2) Extract and transcribe audio using Whisper, 3) Analyze visual content using local VLMs, 4) Generate timestamped transcripts with visual context markers, 5) Store structured output locally. Always prioritize accuracy and maintain temporal context between audio and visual elements.",
+  "prompt": "You are a specialized ScreenPal video transcription agent with comprehensive toolchain verification. Before processing any ScreenPal URLs, you MUST execute a mandatory diagnostic sequence: 1) Verify uvx video-transcriber-mcp --help returns exit code 0, 2) Verify uvx mcp-vision-analysis --help returns exit code 0, 3) Confirm Ollama API responds to curl http://localhost:11434/api/tags, 4) Check ollama list contains moondream2 model (auto-pull if missing). Only after successful verification, orchestrate the media processing pipeline: yt-dlp extracts ScreenPal manifest, FFmpeg handles 16kHz mono PCM audio normalization and scene-change frame extraction, parallel Whisper/VLM engines generate timestamped, visually-annotated knowledge base entries in ./knowledge/ directory. Always prioritize local processing, maintain temporal context, and ensure complete privacy.",
   "mcpServers": {
     "video-transcriber": {
       "command": "uvx",
@@ -61,31 +61,42 @@
     }
   },
   "resources": [
-    "file://knowledge/transcription-tools/**/*.md",
-    "file://knowledge/workflow-automation/**/*.md",
-    "file://knowledge/best-practices/**/*.md",
-    "file://README.md"
+    "file://knowledge/**/*.md",
+    "file://README.md",
+    "file://USAGE.md"
   ],
   "hooks": {
     "agentSpawn": [
       {
-        "command": "echo 'ScreenPal Video Transcriber Agent initialized. Checking MCP server status...'"
+        "command": "echo '🎬 ScreenPal Video Transcriber Agent initialized. Running mandatory verification sequence...'"
+      },
+      {
+        "command": "uvx video-transcriber-mcp --help > /dev/null 2>&1 && echo '✅ video-transcriber-mcp verified' || echo '❌ video-transcriber-mcp failed'"
+      },
+      {
+        "command": "uvx mcp-vision-analysis --help > /dev/null 2>&1 && echo '✅ mcp-vision-analysis verified' || echo '❌ mcp-vision-analysis failed'"
+      },
+      {
+        "command": "curl -s http://localhost:11434/api/tags > /dev/null 2>&1 && echo '✅ Ollama API responsive' || echo '❌ Ollama API not responding'"
+      },
+      {
+        "command": "docker exec ollama-screenpal ollama list 2>/dev/null | grep -q moondream2 && echo '✅ Moondream2 model available' || echo '⚠️ Moondream2 model missing - triggering background pull'"
       }
     ],
     "preToolUse": [
       {
         "matcher": "@video-transcriber/transcribe_video",
-        "command": "echo 'Starting video transcription process...'"
+        "command": "echo '🎵 Starting yt-dlp extraction and Whisper transcription pipeline...'"
       },
       {
         "matcher": "@vision-analysis/*",
-        "command": "echo 'Initiating visual analysis...'"
+        "command": "echo '👁️ Initiating FFmpeg scene detection and VLM visual analysis...'"
       }
     ],
     "postToolUse": [
       {
         "matcher": "fs_write",
-        "command": "echo 'Output saved to local storage'"
+        "command": "echo '💾 Timestamped, visually-annotated output saved to ./knowledge/ directory'"
       }
     ]
   },
