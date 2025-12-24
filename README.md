@@ -83,6 +83,8 @@ knowledge/
 - Either native Ollama or Docker
 - 4GB+ RAM, 5GB+ disk space
 
+**Note**: The setup script automatically installs yt-dlp and other dependencies.
+
 ### Installation
 
 ```bash

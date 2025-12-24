@@ -21,6 +21,18 @@ print "✅ Kiro CLI verified\n\n";
 # Phase 2: Environment Preparation
 print "📋 Phase 2: Environment Preparation...\n";
 
+# Install yt-dlp for video extraction
+unless (system("yt-dlp --version > /dev/null 2>&1") == 0) {
+    print "📦 Installing yt-dlp...\n";
+    if (system("brew --version > /dev/null 2>&1") == 0) {
+        system("brew install yt-dlp") == 0 or die "Failed to install yt-dlp via Homebrew\n";
+    } elsif (system("pip3 --version > /dev/null 2>&1") == 0) {
+        system("pip3 install yt-dlp") == 0 or die "Failed to install yt-dlp via pip3\n";
+    } else {
+        die "❌ Please install yt-dlp manually: https://github.com/yt-dlp/yt-dlp\n";
+    }
+}
+
 # Install uv package manager
 unless (system("uvx --version > /dev/null 2>&1") == 0) {
     print "📦 Installing uv package manager...\n";
