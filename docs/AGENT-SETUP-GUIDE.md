@@ -22,9 +22,8 @@ kiro-cli chat
 kiro-cli chat --agent screenpal-video-transcriber
 ```
 - Uses all global MCP servers (inherited via `includeMcpJson: true`)
-- Full video transcription tool access
-- Specialized for ScreenPal video processing
-- Specialized for video transcription
+- Full video transcription and visual analysis tool access
+- Specialized for ScreenPal video processing with audio and visual insights
 
 ## Configuration Files
 

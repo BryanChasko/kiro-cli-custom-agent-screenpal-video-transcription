@@ -249,7 +249,7 @@ Inherits all tools from `~/.kiro/settings/mcp.json`:
 
 Explicitly configured with:
 - `includeMcpJson: true` → Inherits global servers
-- `allowedTools` → Restricted to safe operations
+- `allowedTools` → Full video transcription and visual analysis capabilities
 - Custom vision-server override → Ensures proper configuration
 
 ## Security Model
@@ -259,15 +259,21 @@ Explicitly configured with:
 ```json
 "allowedTools": [
   "fs_read",                           // Read files
+  "fs_write",                          // Write output files
   "knowledge",                         // Query knowledge base
-  "@video-transcriber/get_video_info"  // Get video metadata only
+  "@video-transcriber/transcribe_video", // Full video transcription
+  "@video-transcriber/extract_audio",   // Audio extraction
+  "@video-transcriber/get_video_info",  // Video metadata
+  "@vision-server/analyze_image",       // Visual analysis
+  "@vision-server/detect_objects",      // Object detection
+  "@vision-server/generate_caption"     // Image captioning
 ]
 ```
 
-Prevents:
-- Arbitrary file writes
-- Unauthorized video transcription
-- Uncontrolled tool access
+Enables:
+- Complete video transcription workflow
+- Visual analysis of video frames
+- Comprehensive audio and visual insights
 
 ### Path Restrictions
 

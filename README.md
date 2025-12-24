@@ -125,6 +125,8 @@ The agent will:
 2. Extract audio using yt-dlp
 3. Transcribe with Whisper
 4. Extract key frames
+5. Analyze visual content with Moondream
+6. Generate comprehensive transcript with visual descriptions
 5. Analyze visuals with Moondream
 6. Generate timestamped transcript with visual descriptions
 
@@ -209,4 +211,4 @@ See `docs/MCP-CONFIGURATION.md` for detailed configuration guide.
 - **Local Processing**: All transcription and analysis happens locally
 - **No Cloud APIs**: No external service dependencies
 - **Secure URLs**: Only processes validated ScreenPal domains
-- **Controlled Access**: Agent permissions limited to video processing tasks
+- **Controlled Access**: Agent permissions include video processing and visual analysis tasks

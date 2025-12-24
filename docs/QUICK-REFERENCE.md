@@ -29,6 +29,9 @@ whisper --help | head -1
 node /tmp/video-transcriber-mcp/dist/index.js --help
 node /tmp/moondream-mcp/build/index.js 2>/dev/null | head -c 50
 
+# Test vision analysis
+curl -s http://localhost:11434/api/tags | grep moondream
+
 # Check Ollama
 curl -s http://localhost:11434/api/tags
 
