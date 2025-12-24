@@ -50,6 +50,7 @@ The agent orchestrates multiple MCP servers and tools:
 - **FFmpeg**: Used by the transcriber to normalize audio and extract frames for vision analysis
 - **Ollama (Native macOS)**: Runs the Moondream2 model locally with GPU acceleration for image-to-text processing
 - **yt-dlp**: The engine inside the transcriber that extracts raw media from ScreenPal or YouTube links
+- **OpenAI Whisper**: The AI model that converts extracted audio to text transcriptions
 
 ### Platform Requirements
 
@@ -83,7 +84,7 @@ knowledge/
 - Either native Ollama or Docker
 - 4GB+ RAM, 5GB+ disk space
 
-**Note**: The setup script automatically installs yt-dlp and other dependencies.
+**Note**: The setup script automatically installs yt-dlp and OpenAI Whisper dependencies.
 
 ### Installation
 
@@ -96,9 +97,10 @@ chmod +x setup.pl
 The setup script will:
 1. Verify Kiro CLI installation
 2. Install yt-dlp for video extraction
-3. Build MCP servers from source
-4. Setup Ollama with Moondream model
-5. Configure global MCP settings (`~/.kiro/settings/mcp.json`)
+3. Install OpenAI Whisper for transcription
+4. Build MCP servers from source
+5. Setup Ollama with Moondream model
+6. Configure global MCP settings (`~/.kiro/settings/mcp.json`)
 5. Create agent profile (`~/.kiro/agents/screenpal-video-transcriber.json`)
 6. Verify all components
 

@@ -33,6 +33,18 @@ unless (system("yt-dlp --version > /dev/null 2>&1") == 0) {
     }
 }
 
+# Install OpenAI Whisper for transcription
+unless (system("whisper --help > /dev/null 2>&1") == 0) {
+    print "📦 Installing OpenAI Whisper...\n";
+    if (system("brew --version > /dev/null 2>&1") == 0) {
+        system("brew install openai-whisper") == 0 or die "Failed to install openai-whisper via Homebrew\n";
+    } elsif (system("pip3 --version > /dev/null 2>&1") == 0) {
+        system("pip3 install openai-whisper") == 0 or die "Failed to install openai-whisper via pip3\n";
+    } else {
+        die "❌ Please install OpenAI Whisper manually: pip3 install openai-whisper\n";
+    }
+}
+
 # Install uv package manager
 unless (system("uvx --version > /dev/null 2>&1") == 0) {
     print "📦 Installing uv package manager...\n";
