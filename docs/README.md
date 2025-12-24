@@ -2,6 +2,7 @@
 
 ## Getting Started
 
+- **[AGENT-SETUP-GUIDE.md](AGENT-SETUP-GUIDE.md)** - Agent linking and configuration
 - **[QUICK-REFERENCE.md](QUICK-REFERENCE.md)** - Common commands and quick fixes
 - **[KIRO-CLI-INTEGRATION.md](KIRO-CLI-INTEGRATION.md)** - How Kiro CLI uses MCP servers
 
@@ -33,6 +34,7 @@ Agents can restrict which tools they're allowed to use via `allowedTools`. This 
 
 | Need | Document |
 |------|----------|
+| Link custom agent | AGENT-SETUP-GUIDE.md |
 | Quick commands | QUICK-REFERENCE.md |
 | How it all works | KIRO-CLI-INTEGRATION.md |
 | System design | ARCHITECTURE.md |

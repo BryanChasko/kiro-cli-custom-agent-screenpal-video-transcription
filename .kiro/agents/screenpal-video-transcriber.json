@@ -65,6 +65,6 @@
       }
     ]
   },
-  "includeMcpJson": true,
+  "includeMcpJson": false,
   "model": "claude-sonnet-4"
 }

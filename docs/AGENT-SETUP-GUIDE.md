@@ -4,7 +4,13 @@ Quick reference for understanding how the default Kiro CLI agent and the screenp
 
 ## Quick Start
 
-### Launch Default Agent
+### 1. Link Agent Globally
+```bash
+# Make agent available from any directory
+ln -sf "/Users/bryanchasko/Code/kiro-cli-custom-agent-screenpal-video-transcription/.kiro/agents/screenpal-video-transcriber.json" "/Users/bryanchasko/.kiro/agents/screenpal-video-transcriber.json"
+```
+
+### 2. Launch Default Agent
 ```bash
 kiro-cli chat
 ```
@@ -12,7 +18,7 @@ kiro-cli chat
 - Full tool access
 - General-purpose AI assistant
 
-### Launch Custom Agent
+### 3. Launch Custom Agent
 ```bash
 kiro-cli chat --agent screenpal-video-transcriber
 ```
@@ -232,6 +238,38 @@ cat ~/.kiro/agents/screenpal-video-transcriber.json | jq .mcpServers
 1. Add tool to `allowedTools` if needed
 2. Use default agent if full access required
 
+## Agent Linking Setup
+
+### Making Custom Agents Globally Available
+
+Custom agents must be linked to the global agents directory to be discoverable by Kiro CLI.
+
+**Command**:
+```bash
+ln -sf "/Users/bryanchasko/Code/kiro-cli-custom-agent-screenpal-video-transcription/.kiro/agents/screenpal-video-transcriber.json" "/Users/bryanchasko/.kiro/agents/screenpal-video-transcriber.json"
+```
+
+**Verification**:
+```bash
+# Check link exists
+ls -la ~/.kiro/agents/screenpal-video-transcriber.json
+
+# Should show symbolic link pointing to project directory
+```
+
+**Benefits**:
+- Agent config stays in project (version controlled)
+- Available globally from any directory
+- Single source of truth (no duplication)
+- Automatic updates when project config changes
+
+### Agent Discovery Process
+
+1. Kiro CLI scans `~/.kiro/agents/` for `.json` files
+2. Loads and validates each agent configuration
+3. Makes valid agents available via `--agent` flag
+4. Symbolic links are followed to actual config files
+
 ## Best Practices
 
 1. **Keep global config minimal** - Only add servers all agents need
@@ -240,6 +278,7 @@ cat ~/.kiro/agents/screenpal-video-transcriber.json | jq .mcpServers
 4. **Document custom agents** - Explain why restrictions exist
 5. **Test both agents** - Ensure changes don't break either
 6. **Use agent profiles** - Don't modify global config for agent-specific needs
+7. **Link, don't copy** - Use symbolic links to maintain single source of truth
 
 ## See Also
 
