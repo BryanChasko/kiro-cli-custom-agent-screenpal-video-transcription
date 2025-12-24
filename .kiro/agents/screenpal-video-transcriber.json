@@ -12,7 +12,10 @@
   ],
   "allowedTools": [
     "fs_read",
-    "knowledge", 
+    "fs_write",
+    "knowledge",
+    "@video-transcriber/transcribe_video",
+    "@video-transcriber/extract_audio", 
     "@video-transcriber/get_video_info"
   ],
   "toolsSettings": {
@@ -65,6 +68,6 @@
       }
     ]
   },
-  "includeMcpJson": false,
+  "includeMcpJson": true,
   "model": "claude-sonnet-4"
 }
