@@ -8,7 +8,10 @@
     "knowledge",
     "@video-transcriber/transcribe_video",
     "@video-transcriber/extract_audio",
-    "@video-transcriber/get_video_info"
+    "@video-transcriber/get_video_info",
+    "@vision-server/analyze_image",
+    "@vision-server/detect_objects",
+    "@vision-server/generate_caption"
   ],
   "allowedTools": [
     "fs_read",
@@ -16,7 +19,10 @@
     "knowledge",
     "@video-transcriber/transcribe_video",
     "@video-transcriber/extract_audio", 
-    "@video-transcriber/get_video_info"
+    "@video-transcriber/get_video_info",
+    "@vision-server/analyze_image",
+    "@vision-server/detect_objects",
+    "@vision-server/generate_caption"
   ],
   "toolsSettings": {
     "fs_write": {
