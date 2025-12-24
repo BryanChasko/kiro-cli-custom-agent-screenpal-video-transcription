@@ -39,14 +39,51 @@ Local audio-visual transcription pipeline using:
 - **FFmpeg Documentation**: Audio processing + scene detection filters
 - **HuggingFace Whisper Models**: Pre-trained model weights
 
-## Configuration Requirements
+## Configuration Requirements (Verified Working)
 
 ### MCP Server Registration
 Location: `~/.kiro/settings/mcp.json`
-- video-transcriber-mcp server registered for audio processing
-- mcp-vision-analysis server registered for visual analysis
-- Both run via `uvx` with environment variables
-- Vision server connects to local Ollama API endpoint
+
+```json
+{
+  "mcpServers": {
+    "video-transcriber": {
+      "command": "node",
+      "args": ["/tmp/video-transcriber-mcp/dist/index.js"],
+      "env": {
+        "WHISPER_MODEL": "base",
+        "YOUTUBE_FORMAT": "bestaudio",
+        "WHISPER_DEVICE": "cpu"
+      },
+      "timeout": 300000,
+      "disabled": false
+    },
+    "vision-server": {
+      "command": "node",
+      "args": ["/tmp/moondream-mcp/build/index.js"],
+      "env": {
+        "OLLAMA_BASE_URL": "http://localhost:11434"
+      },
+      "timeout": 180000,
+      "disabled": false
+    }
+  }
+}
+```
+
+### Key Configuration Points
+- **Execution Method**: Node.js direct execution (not uvx)
+- **Server Names**: Must match between global and agent configs
+- **Environment Variables**: Minimal set to avoid conflicts
+- **Agent Setting**: `includeMcpJson: true` to load global config
+- **Tool References**: Use `@video-transcriber/*` and `@vision-server/*`
+
+### Troubleshooting
+See `knowledge/workflow-automation/mcp-troubleshooting.md` for:
+- Configuration conflict resolution
+- Server initialization failures
+- Ollama connectivity issues
+- Tool reference errors
 
 ### Environment Variables
 ```bash

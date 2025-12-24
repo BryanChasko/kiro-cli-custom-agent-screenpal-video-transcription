@@ -2,46 +2,18 @@
   "name": "screenpal-video-transcriber",
   "description": "Specialized agent for processing ScreenPal videos with audio transcription and visual analysis using local AI models",
   "prompt": "You are a specialized ScreenPal video transcription agent with comprehensive toolchain verification. Before processing any ScreenPal URLs, you MUST execute a mandatory diagnostic sequence: 1) Verify uvx video-transcriber-mcp --help returns exit code 0, 2) Verify uvx mcp-vision-analysis --help returns exit code 0, 3) Confirm Ollama API responds to curl http://localhost:11434/api/tags, 4) Check ollama list contains moondream2 model (auto-pull if missing). Only after successful verification, orchestrate the media processing pipeline: yt-dlp extracts ScreenPal manifest, FFmpeg handles 16kHz mono PCM audio normalization and scene-change frame extraction, parallel Whisper/VLM engines generate timestamped, visually-annotated knowledge base entries in ./knowledge/ directory. Always prioritize local processing, maintain temporal context, and ensure complete privacy.",
-  "mcpServers": {
-    "video-transcriber": {
-      "command": "uvx",
-      "args": ["video-transcriber-mcp"],
-      "env": {
-        "WHISPER_MODEL": "base",
-        "YOUTUBE_FORMAT": "bestaudio",
-        "WHISPER_DEVICE": "cpu"
-      },
-      "timeout": 300000
-    },
-    "vision-analysis": {
-      "command": "uvx",
-      "args": ["mcp-vision-analysis"],
-      "env": {
-        "OLLAMA_API_ENDPOINT": "http://localhost:11434",
-        "VLM_MODEL": "moondream2",
-        "SCENE_THRESHOLD": "0.4",
-        "MAX_FRAMES": "50"
-      },
-      "timeout": 180000
-    }
-  },
   "tools": [
     "fs_read",
-    "fs_write",
+    "fs_write", 
     "knowledge",
     "@video-transcriber/transcribe_video",
     "@video-transcriber/extract_audio",
-    "@video-transcriber/get_video_info",
-    "@vision-analysis/analyze_frames",
-    "@vision-analysis/detect_scene_changes",
-    "@vision-analysis/compare_frames",
-    "@vision-analysis/extract_keyframes"
+    "@video-transcriber/get_video_info"
   ],
   "allowedTools": [
     "fs_read",
-    "knowledge",
-    "@video-transcriber/get_video_info",
-    "@vision-analysis/extract_keyframes"
+    "knowledge", 
+    "@video-transcriber/get_video_info"
   ],
   "toolsSettings": {
     "fs_write": {
@@ -55,7 +27,7 @@
       "maxDuration": 3600,
       "allowedDomains": ["go.screenpal.com", "screenpal.com"]
     },
-    "@vision-analysis/analyze_frames": {
+    "@vision-server/analyze_image": {
       "maxFrames": 100,
       "allowedFormats": ["png", "jpg", "jpeg"]
     }
@@ -71,26 +43,19 @@
         "command": "echo '🎬 ScreenPal Video Transcriber Agent initialized. Running mandatory verification sequence...'"
       },
       {
-        "command": "uvx video-transcriber-mcp --help > /dev/null 2>&1 && echo '✅ video-transcriber-mcp verified' || echo '❌ video-transcriber-mcp failed'"
-      },
-      {
-        "command": "uvx mcp-vision-analysis --help > /dev/null 2>&1 && echo '✅ mcp-vision-analysis verified' || echo '❌ mcp-vision-analysis failed'"
+        "command": "node /tmp/video-transcriber-mcp/dist/index.js --help > /dev/null 2>&1 && echo '✅ video-transcriber verified' || echo '❌ video-transcriber failed'"
       },
       {
         "command": "curl -s http://localhost:11434/api/tags > /dev/null 2>&1 && echo '✅ Ollama API responsive' || echo '❌ Ollama API not responding'"
       },
       {
-        "command": "docker exec ollama-screenpal ollama list 2>/dev/null | grep -q moondream2 && echo '✅ Moondream2 model available' || echo '⚠️ Moondream2 model missing - triggering background pull'"
+        "command": "curl -s http://localhost:11434/api/tags | grep -q moondream && echo '✅ Moondream model available' || echo '⚠️ Moondream model missing'"
       }
     ],
     "preToolUse": [
       {
         "matcher": "@video-transcriber/transcribe_video",
         "command": "echo '🎵 Starting yt-dlp extraction and Whisper transcription pipeline...'"
-      },
-      {
-        "matcher": "@vision-analysis/*",
-        "command": "echo '👁️ Initiating FFmpeg scene detection and VLM visual analysis...'"
       }
     ],
     "postToolUse": [
@@ -100,6 +65,6 @@
       }
     ]
   },
-  "includeMcpJson": false,
+  "includeMcpJson": true,
   "model": "claude-sonnet-4"
 }

@@ -1,28 +1,21 @@
 {
   "mcpServers": {
     "video-transcriber": {
-      "command": "uvx",
-      "args": ["video-transcriber-mcp"],
+      "command": "node",
+      "args": ["/tmp/video-transcriber-mcp/dist/index.js"],
       "env": {
         "WHISPER_MODEL": "base",
         "YOUTUBE_FORMAT": "bestaudio",
-        "WHISPER_DEVICE": "cpu",
-        "TEMP_DIR": "./temp",
-        "OUTPUT_FORMAT": "json"
+        "WHISPER_DEVICE": "cpu"
       },
       "timeout": 300000,
       "disabled": false
     },
-    "vision-analysis": {
-      "command": "uvx",
-      "args": ["mcp-vision-analysis"],
+    "vision-server": {
+      "command": "node",
+      "args": ["/tmp/moondream-mcp/build/index.js"],
       "env": {
-        "OLLAMA_API_ENDPOINT": "http://localhost:11434",
-        "VLM_MODEL": "moondream2",
-        "SCENE_THRESHOLD": "0.4",
-        "MAX_FRAMES": "50",
-        "FRAME_INTERVAL": "5",
-        "OUTPUT_DIR": "./output/frames"
+        "OLLAMA_BASE_URL": "http://localhost:11434"
       },
       "timeout": 180000,
       "disabled": false
