@@ -1,7 +1,17 @@
 #!/usr/bin/env perl
 
 # ScreenPal Video Transcriber Agent - Comprehensive Setup Script
-# Configures Kiro CLI with MCP servers for local video transcription and visual analysis
+# Configures Kiro CLI with MCP servers for unified video transcription and visual analysis
+#
+# UNIFIED WORKFLOW:
+# 1. Audio Extraction & Transcription (Whisper)
+# 2. Visual Analysis (FFmpeg + Moondream2)
+# 3. Unified Document Creation (JSON + Markdown)
+#
+# OUTPUT: ~/Downloads/video-transcripts-{timestamp}/
+#   - {video-id}-UNIFIED.json (structured data)
+#   - {video-id}-UNIFIED.md (human-readable)
+#   - {video-id}-frames/ (extracted PNG frames)
 
 use strict;
 use warnings;
@@ -9,7 +19,8 @@ use File::Path qw(make_path);
 use File::Copy;
 use JSON;
 
-print "🎬 Setting up ScreenPal Video Transcriber Agent for Kiro CLI...\n\n";
+print "🎬 Setting up ScreenPal Video Transcriber Agent for Kiro CLI...\n";
+print "📊 Unified Workflow: Audio + Visual + Synchronized Document\n\n";
 
 # Phase 1: Verify Kiro CLI Installation
 print "📋 Phase 1: Verifying Kiro CLI Installation...\n";

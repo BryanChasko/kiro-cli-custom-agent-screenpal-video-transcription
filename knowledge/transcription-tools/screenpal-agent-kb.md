@@ -152,13 +152,41 @@ Available at HuggingFace Whisper repository:
 ## Tool Integration
 
 ### Primary Tool: transcribe_video
-- Processes ScreenPal URLs end-to-end
-- Returns structured transcript with timestamps
-- Includes visual descriptions and change markers
+- Processes ScreenPal URLs for audio transcription only
+- Returns timestamped text transcript
+- Does NOT include visual analysis or frame extraction
 
-### Vision Analysis Tool: analyze_frames
-- Processes extracted keyframes through local VLMs
-- Generates semantic descriptions of screen content
+### Visual Analysis Tools (Error-Handled Process)
+```python
+def safe_visual_analysis(image_path):
+    # 1. Validate path - convert ~ to absolute
+    abs_path = os.path.expanduser(image_path) if image_path.startswith('~') else os.path.abspath(image_path)
+    if not os.path.exists(abs_path):
+        return {"error": f"Image not found: {image_path}", "fallback": "skip_frame"}
+    
+    # 2. Check Ollama connection
+    try:
+        result = subprocess.run(['curl', '-s', 'http://localhost:11434/api/tags'], 
+                              capture_output=True, text=True, timeout=5)
+        if result.returncode != 0:
+            return {"error": "Ollama not responding", "fallback": "audio_only"}
+    except:
+        return {"error": "Ollama connection failed", "fallback": "audio_only"}
+    
+    # 3. Call vision tools with absolute path
+    return {"path": abs_path, "ready": True}
+```
+
+### Vision Analysis Tools
+- **analyze_image**: Process individual frames with VLM analysis
+- **detect_objects**: Identify and locate objects within frames  
+- **generate_caption**: Create descriptive captions for visual content
+- Maintains temporal context between frames
+
+### Vision Analysis Tools
+- **analyze_image**: Process individual frames with VLM analysis
+- **detect_objects**: Identify and locate objects within frames
+- **generate_caption**: Create descriptive captions for visual content
 - Maintains temporal context between frames
 
 ### Expected Input Format

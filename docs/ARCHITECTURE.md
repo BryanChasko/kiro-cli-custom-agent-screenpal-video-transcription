@@ -273,6 +273,8 @@ Explicitly configured with:
 Enables:
 - Complete video transcription workflow
 - Visual analysis of video frames
+- Object detection in video content
+- Caption generation for visual elements
 - Comprehensive audio and visual insights
 
 ### Path Restrictions

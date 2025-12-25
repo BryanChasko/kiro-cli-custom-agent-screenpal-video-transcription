@@ -66,7 +66,9 @@ uvx install mcp-vision-analysis
 ```
 
 ### Available Tools
-- `analyze_frames`: VLM frame analysis
+- `analyze_image`: Process individual frames with VLM analysis
+- `detect_objects`: Identify and locate objects within frames
+- `generate_caption`: Create descriptive captions for visual content
 - `detect_scene_changes`: FFmpeg scene detection
 - `compare_frames`: Frame comparison
 - `extract_keyframes`: Keyframe extraction

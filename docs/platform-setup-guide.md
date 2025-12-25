@@ -47,6 +47,8 @@
 ### Final MCP Configuration
 Update agent config (`.kiro/agents/screenpal-video-transcriber.json`):
 
+**Agent Tools**: Includes `execute_bash` for shell operations, file cleanup, and directory management alongside video processing and vision analysis tools.
+
 **Setup Python Environment**:
 ```bash
 cd /tmp/moondream-mcp

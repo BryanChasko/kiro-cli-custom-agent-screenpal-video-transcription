@@ -37,33 +37,51 @@ This repository contains a Kiro CLI custom agent specialized in processing Scree
 
 ## Purpose
 
-The screenpal-video-transcriber agent provides:
-- **Audio Transcription**: Extract and transcribe speech using OpenAI Whisper
-- **Visual Analysis**: Generate semantic descriptions of screen content using local VLMs
-- **Temporal Context**: Track visual changes and insert contextual markers
+The screenpal-video-transcriber agent provides a complete unified workflow:
+
+1. **Audio Transcription**: Extract and transcribe speech using OpenAI Whisper
+2. **Visual Analysis**: Extract video frames at scene changes and analyze with Moondream2 VLM
+3. **Unified Document**: Automatically correlate audio and visual data by timestamp
+
+**Output**: Three integrated files created in `~/Downloads/video-transcripts-{timestamp}/`:
+- `{video-id}-UNIFIED.json` - Structured data combining audio segments with visual frames
+- `{video-id}-UNIFIED.md` - Human-readable synchronized walkthrough
+- `{video-id}-frames/` - Extracted PNG frames for reference
+
+### ⚠️ Important: Unified Workflow
+
+The agent now automatically handles all three steps in one request:
+1. Extracts audio and transcribes to text
+2. Extracts video frames and analyzes visuals
+3. Creates unified document correlating audio + visual by timestamp
+
+No manual tool selection needed - just provide a ScreenPal URL.
 
 ## Architecture
 
-The agent orchestrates multiple MCP servers and tools:
-- **video-transcriber-mcp**: Node.js MCP server for audio extraction and Whisper transcription
-- **moondream-mcp**: Node.js MCP server for visual analysis using Ollama + Moondream2
-- **FFmpeg**: Used by the transcriber to normalize audio and extract frames for vision analysis
-- **Ollama (Native macOS)**: Runs the Moondream2 model locally with GPU acceleration for image-to-text processing
-- **yt-dlp**: The engine inside the transcriber that extracts raw media from ScreenPal or YouTube links
-- **OpenAI Whisper**: The AI model that converts extracted audio to text transcriptions
+The agent orchestrates a unified three-stage pipeline:
 
-### Platform Requirements
+**Stage 1: Audio Extraction & Transcription**
+- yt-dlp extracts audio stream from ScreenPal URL
+- OpenAI Whisper transcribes to timestamped text segments
 
-**Current Setup: Mac Mini with GPU acceleration**
-- Native macOS Ollama installation for optimal performance
-- Apple Silicon GPU acceleration for vision model inference
-- Homebrew package management for dependencies
+**Stage 2: Visual Analysis**
+- FFmpeg extracts frames at scene changes (threshold: 0.4)
+- Moondream2 VLM analyzes each frame for UI elements and content
+- Generates detailed visual descriptions with timestamps
 
-**For NVIDIA GPU Systems:**
-- Use Docker-based Ollama with NVIDIA Container Toolkit
-- Replace native Ollama setup with: `docker run -d --gpus all -p 11434:11434 ollama/ollama`
-- Ensure NVIDIA drivers and CUDA toolkit are installed
-- Update MCP server configuration to point to Docker container
+**Stage 3: Unified Document Creation**
+- Correlates audio segments with visual frames by timestamp
+- Creates synchronized JSON and Markdown documents
+- Stores all outputs in `~/Downloads/video-transcripts-{timestamp}/`
+
+### MCP Servers Used
+
+- **video-transcriber-mcp**: Audio extraction and Whisper transcription
+- **ffmpeg-mcp**: Frame extraction with scene detection
+- **moondream-mcp**: Visual analysis using Ollama + Moondream2
+- **yt-dlp**: Media stream extraction
+- **Ollama**: Local VLM runtime (native macOS or Docker)
 
 ## Knowledge Base Structure
 
@@ -127,8 +145,12 @@ The agent will:
 4. Extract key frames
 5. Analyze visual content with Moondream
 6. Generate comprehensive transcript with visual descriptions
-5. Analyze visuals with Moondream
-6. Generate timestamped transcript with visual descriptions
+7. Create unified document correlating audio + visual by timestamp
+
+**Output files** created in `~/Downloads/video-transcripts-{timestamp}/`:
+- `{video-id}-UNIFIED.json` - Structured synchronized data
+- `{video-id}-UNIFIED.md` - Human-readable walkthrough
+- `{video-id}-frames/` - Extracted PNG frames
 
 ## Configuration
 
@@ -178,8 +200,20 @@ Specialized configuration for this agent:
   "name": "screenpal-video-transcriber",
   "description": "Specialized agent for processing ScreenPal videos...",
   "includeMcpJson": true,
-  "tools": ["fs_read", "fs_write", "knowledge", "@video-transcriber/transcribe_video"],
-  "allowedTools": ["fs_read", "knowledge", "@video-transcriber/get_video_info"],
+  "tools": [
+    "fs_read", "fs_write", "knowledge", 
+    "@video-transcriber/transcribe_video",
+    "@vision-server/analyze_image",
+    "@vision-server/detect_objects", 
+    "@vision-server/generate_caption"
+  ],
+  "allowedTools": [
+    "fs_read", "knowledge", 
+    "@video-transcriber/get_video_info",
+    "@vision-server/analyze_image",
+    "@vision-server/detect_objects",
+    "@vision-server/generate_caption"
+  ],
   "model": "claude-sonnet-4"
 }
 ```
@@ -195,9 +229,16 @@ See `docs/MCP-CONFIGURATION.md` for detailed configuration guide.
 
 - **URL Validation**: Automatic ScreenPal URL format validation
 - **Audio Transcription**: High-quality speech-to-text with timestamps
-- **Visual Analysis**: Semantic understanding of screen content changes
-- **Scene Detection**: Optimized frame processing using FFmpeg
-- **Local Storage**: Structured output for knowledge base integration
+- **Frame Extraction**: Scene-change detection with FFmpeg for key moments
+- **Detailed Visual Analysis**: Complete UI element descriptions including:
+  - Exact text and button labels
+  - Window titles and menu items
+  - Form fields and data displayed
+  - Visual layout and positioning
+  - Interactive elements and controls
+- **Timestamp Correlation**: Synchronized audio-visual walkthrough
+- **Unified Output**: Single document combining audio + visual
+- **Local Storage**: Organized output in `~/Downloads/video-transcripts-{timestamp}/`
 - **Privacy Focused**: No data leaves your local environment
 
 ## Troubleshooting
@@ -216,7 +257,13 @@ See `docs/MCP-CONFIGURATION.md` for detailed configuration guide.
 - **Solution**: Start Ollama: `ollama serve` or check Docker container
 - **Verify**: `curl -s http://localhost:11434/api/tags`
 
+**MCP Tools Not Callable**: Frame extraction and vision analysis tools not available in chat
+- **Cause**: Kiro CLI chat context doesn't provide direct MCP tool invocation
+- **Solution**: Use manual frame extraction (see MANUAL_FRAME_EXTRACTION.md)
+- **Workflow**: Extract frames manually, then agent analyzes pre-extracted frames
+
 See [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for complete troubleshooting guide.
+See [MANUAL_FRAME_EXTRACTION.md](MANUAL_FRAME_EXTRACTION.md) for frame extraction instructions.
 
 ## Documentation
 

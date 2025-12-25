@@ -9,6 +9,28 @@
 ## MCP Server Configuration
 **File**: `.kiro/agents/screenpal-video-transcriber.json`
 
+### Agent Tools Configuration
+The agent includes `execute_bash` for shell command execution, file cleanup, and directory operations:
+
+```json
+{
+  "tools": [
+    "fs_read",
+    "fs_write", 
+    "knowledge",
+    "execute_bash",
+    "@video-transcriber/transcribe_video",
+    "@video-transcriber/extract_audio",
+    "@video-transcriber/get_video_info",
+    "@ffmpeg-mcp/extract_frames_from_video",
+    "@ffmpeg-mcp/get_video_info",
+    "@vision-server/analyze_image",
+    "@vision-server/detect_objects",
+    "@vision-server/generate_caption"
+  ]
+}
+```
+
 ### Setup
 Both servers require output suppression to prevent MCP protocol handshake failures. Diagnostic logs must be filtered before the MCP initialize response.
 

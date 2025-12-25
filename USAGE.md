@@ -4,43 +4,31 @@
 
 ### Prerequisites
 1. **Kiro CLI** installed and configured
-2. **Docker** installed and running
+2. **Docker** installed and running (or native Ollama)
 3. **Python 3.8+** with uv package manager
 4. **Ollama** service running locally
 
 ### Setup Steps
 
-1. **Install MCP servers**:
+1. **Run automated setup**:
 ```bash
-uvx install video-transcriber-mcp
-uvx install mcp-vision-analysis
-```
-
-2. **Setup Ollama and models**:
-```bash
-# Start Ollama service
-ollama serve
-
-# Download VLM models
-ollama pull moondream2
-ollama pull llava
-```
-
-3. **Install the agent**:
-```bash
-# Run automated setup
+cd /path/to/kiro-cli-custom-agent-screenpal-video-transcription
+chmod +x setup.pl
 ./setup.pl
-
-# Or install globally
-./setup.pl --global
 ```
 
-4. **Verify installation**:
-```bash
-# Check MCP servers
-uvx video-transcriber-mcp --help
-uvx mcp-vision-analysis --help
+The setup script will:
+- Verify Kiro CLI installation
+- Install yt-dlp for video extraction
+- Install OpenAI Whisper for transcription
+- Build MCP servers from source
+- Setup Ollama with Moondream model
+- Configure global MCP settings
+- Create agent profile
+- Verify all components
 
+2. **Verify installation**:
+```bash
 # Check Ollama models
 ollama list
 
@@ -52,20 +40,24 @@ kiro-cli chat --agent screenpal-video-transcriber
 
 ### Starting the Agent
 ```bash
+cd /path/to/kiro-cli-custom-agent-screenpal-video-transcription
 kiro-cli chat --agent screenpal-video-transcriber
 ```
 
-### Simple Transcription
+### Process a Video
 ```
 > Please transcribe this ScreenPal video: https://go.screenpal.com/abc123xyz
 ```
 
-### Advanced Processing
-```
-> Transcribe this video with detailed visual analysis: https://go.screenpal.com/abc123xyz
-> Use the large Whisper model for higher accuracy
-> Set scene detection threshold to 0.3 for more detailed visual changes
-```
+The agent will automatically:
+1. Extract audio and transcribe to text
+2. Extract video frames and analyze visuals
+3. Create unified document with both tracks
+
+**Output files** created in `~/Downloads/video-transcripts-{timestamp}/`:
+- `{video-id}-UNIFIED.json` - Structured data
+- `{video-id}-UNIFIED.md` - Human-readable walkthrough
+- `{video-id}-frames/` - Extracted PNG frames
 
 ## Example Workflows
 
@@ -77,7 +69,7 @@ Expected Output:
 - Audio transcript with timestamps
 - Visual descriptions of code changes
 - Screen change markers for different applications
-- Structured output saved to transcripts/
+- Unified JSON and Markdown files in ~/Downloads/video-transcripts-{timestamp}/
 ```
 
 ### 2. Presentation Analysis
@@ -89,6 +81,7 @@ Expected Output:
 - Slide transition markers
 - Visual content descriptions
 - Temporal context tracking
+- Complete synchronized walkthrough
 ```
 
 ### 3. Batch Processing
@@ -99,34 +92,62 @@ Input: "Process these training videos:
 - https://go.screenpal.com/training-03"
 
 Expected Output:
-- Individual transcripts for each video
-- Combined summary report
+- Individual unified transcripts for each video
+- Separate directories for each video
 - Consistent formatting across all outputs
 ```
 
-## Configuration Options
+## Output Structure
 
-### Whisper Model Selection
+### Directory Organization
 ```
-> Use the base Whisper model for faster processing
-> Switch to large-v3 model for better accuracy
-> Set Whisper device to GPU for faster processing
-```
-
-### Visual Analysis Settings
-```
-> Use Moondream2 for lightweight visual analysis
-> Switch to Llava for more detailed descriptions
-> Set scene threshold to 0.2 for sensitive change detection
-> Limit to 30 frames for quick processing
+~/Downloads/video-transcripts-{timestamp}/
+├── {video-id}-UNIFIED.json          # Structured synchronized data
+├── {video-id}-UNIFIED.md            # Human-readable walkthrough
+├── {video-id}-frames/               # Extracted PNG frames
+│   ├── frame_0001.png
+│   ├── frame_0002.png
+│   └── ...
+├── metadata_{video-id}.json         # Video metadata
+└── temp_video.mp4                   # Downloaded video file
 ```
 
-### Output Formatting
+### UNIFIED.json Structure
+```json
+{
+  "video_id": "abc123xyz",
+  "url": "https://go.screenpal.com/watch/abc123xyz",
+  "duration_seconds": 300.0,
+  "synchronized_timeline": [
+    {
+      "timestamp": 0.0,
+      "audio": {
+        "segment_id": 0,
+        "text": "What the speaker said",
+        "start": 0.0,
+        "end": 5.2
+      },
+      "visual": {
+        "frame_id": "0001",
+        "description": "What's shown on screen",
+        "ui_elements": {...}
+      },
+      "context": "What's happening"
+    }
+  ]
+}
 ```
-> Save transcript as JSON format
-> Include confidence scores in output
-> Generate summary report
-> Export to knowledge base format
+
+### UNIFIED.md Structure
+```markdown
+# Unified Audio-Visual Transcript
+
+## Complete Synchronized Walkthrough
+
+### 0:00 - Scene Title
+**Audio**: What the speaker said...
+**Visual**: What's shown on screen...
+**Context**: What's happening...
 ```
 
 ## Troubleshooting
@@ -200,66 +221,3 @@ ollama serve
 - Monitor system resources
 - Implement progress tracking
 - Handle failures gracefully
-
-## Output Examples
-
-### Basic Transcript
-```json
-{
-  "video_id": "abc123xyz",
-  "url": "https://go.screenpal.com/abc123xyz",
-  "duration": 300.5,
-  "processed_at": "2025-12-24T11:00:00Z",
-  "transcript": [
-    {
-      "start": 0.0,
-      "end": 4.2,
-      "text": "Welcome to this Python tutorial",
-      "confidence": 0.98
-    }
-  ],
-  "visual_analysis": [
-    {
-      "timestamp": 0.0,
-      "description": "Desktop with VS Code editor open",
-      "change_type": "scene_start"
-    }
-  ]
-}
-```
-
-### Detailed Analysis
-```json
-{
-  "video_id": "abc123xyz",
-  "processing_info": {
-    "whisper_model": "base",
-    "vlm_model": "moondream2",
-    "scene_threshold": 0.4,
-    "frames_processed": 25
-  },
-  "transcript": [...],
-  "visual_timeline": [
-    {
-      "timestamp": 0.0,
-      "frame_id": "frame_0001",
-      "description": "VS Code editor showing Python file main.py",
-      "ui_elements": ["editor", "file_tree", "terminal"],
-      "code_visible": true
-    },
-    {
-      "timestamp": 15.3,
-      "frame_id": "frame_0002",
-      "description": "**SCREEN CHANGE** - Switched to terminal window",
-      "change_type": "application_switch",
-      "previous_context": "VS Code editor"
-    }
-  ],
-  "summary": {
-    "total_speech_time": 280.1,
-    "silence_periods": 5,
-    "screen_changes": 8,
-    "applications_used": ["VS Code", "Terminal", "Browser"]
-  }
-}
-```
