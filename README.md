@@ -93,7 +93,75 @@ knowledge/
 └── best-practices/        # Video processing best practices
 ```
 
-## Quick Start
+## Perl Scripts
+
+This project uses Perl scripts for system automation and configuration management. Perl provides robust text processing, system integration, and cross-platform compatibility for our video processing workflows.
+
+### Setup Script (`setup.pl`)
+
+The main setup script automates the complete installation and configuration process:
+
+```bash
+# Make executable and run
+chmod +x setup.pl
+./setup.pl
+```
+
+**What it does:**
+- Verifies Kiro CLI installation
+- Installs dependencies (yt-dlp, OpenAI Whisper, uv package manager)
+- Clones and builds MCP servers from source
+- Configures Ollama with Moondream model
+- Creates MCP configuration files
+- Sets up agent profiles
+- Performs comprehensive verification
+
+**Note**: This script was functional as of January 2026 but is not actively maintained. If you encounter issues, refer to the manual setup instructions in the documentation.
+
+### Why Perl?
+
+- **Text Processing**: Excellent for configuration file manipulation and JSON handling
+- **System Integration**: Native support for shell commands and file operations
+- **Cross-Platform**: Works consistently across macOS, Linux, and Windows
+- **Mature Ecosystem**: Stable libraries for JSON, file handling, and HTTP operations
+- **Error Handling**: Robust error checking and reporting capabilities
+
+The agent now includes `execute_perl` tool for Perl script execution, file cleanup, and directory operations alongside the existing video processing and vision analysis capabilities.
+
+## Perl Scripts
+
+This project uses Perl scripts for system automation and configuration management. Perl provides robust text processing, system integration, and cross-platform compatibility for our video processing workflows.
+
+### Setup Script (`setup.pl`)
+
+The main setup script automates the complete installation and configuration process:
+
+```bash
+# Make executable and run
+chmod +x setup.pl
+./setup.pl
+```
+
+**What it does:**
+- Verifies Kiro CLI installation
+- Installs dependencies (yt-dlp, OpenAI Whisper, uv package manager)
+- Clones and builds MCP servers from source
+- Configures Ollama with Moondream model
+- Creates MCP configuration files
+- Sets up agent profiles
+- Performs comprehensive verification
+
+**Note**: This script was functional as of January 2026 but is not actively maintained. If you encounter issues, refer to the manual setup instructions in the documentation.
+
+### Why Perl?
+
+- **Text Processing**: Excellent for configuration file manipulation and JSON handling
+- **System Integration**: Native support for shell commands and file operations
+- **Cross-Platform**: Works consistently across macOS, Linux, and Windows
+- **Mature Ecosystem**: Stable libraries for JSON, file handling, and HTTP operations
+- **Error Handling**: Robust error checking and reporting capabilities
+
+The agent includes `execute_bash` tool for shell command execution, file cleanup, and directory operations alongside the existing video processing and vision analysis capabilities.
 
 ### Prerequisites
 
