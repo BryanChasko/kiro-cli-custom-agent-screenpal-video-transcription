@@ -2,19 +2,13 @@
 
 **TLDR**: Turn Any Video Into a Document
 
-This repository contains files to build and enhance an AWS Kiro CLI custom agent that takes video URLs from **ScreenPal, YouTube, Twitch, or S3** and produces a directory with audio transcription, visual analysis, and a unified markdown document.
-
-**Supported Platforms:**
-- **ScreenPal** - go.screenpal.com, screenpal.com
-- **YouTube** - youtube.com, youtu.be  
-- **Twitch** - twitch.tv
-- **S3** - s3.amazonaws.com, *.s3.*.amazonaws.com
+This repository contains files to build and enhance an AWS Kiro CLI custom agent that takes video URLs from **S3, ScreenPal, YouTube, or Twitch** and produces a directory with audio transcription, visual analysis, and a unified markdown document.
 
 ## Time & Credits + MCP Overview
 
-**Estimated costs**: ~90 Kiro credits to develop, ~30 credits to deploy, ~9 credits to run. Fits within the 50 credit monthly free tier, especially with claude-haiku-4.5 (0.4x credit multiplier as of January 2026).
+**Estimated costs**: ~Took about 90 Kiro credits to develop, ~I recommend 30 credits to deploy, as I haven't tested redeploying. ~Takes about 3 credits to create a document from a short video, haven't experimented with a longer video. Fits within the 50 credit monthly free tier, especially with claude-haiku-4.5 (0.4x credit multiplier as of January 2026).
 
-**Development time**: ~6 hours for planning and building, ~15 minutes to process a video.
+**Development time**: ~6 hours for planning and building, ~5 minutes to process a short video, screenshots, and generate a unified report.
 
 **MCP Servers**:
 - **video-transcriber**: Audio transcription with Whisper
