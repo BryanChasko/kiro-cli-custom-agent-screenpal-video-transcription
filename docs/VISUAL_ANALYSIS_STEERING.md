@@ -4,7 +4,7 @@
 Extract actual video frames from ScreenPal videos and provide detailed visual analysis including exact UI elements, text, buttons, and interface details.
 
 ## CRITICAL LIMITATION
-The agent cannot directly invoke MCP tools (@ffmpeg-mcp, @vision-server) from the chat context. Frame extraction must be performed externally, then the agent analyzes pre-extracted frames.
+The agent can invoke MCP tools (@ffmpeg-mcp, @vision-server) directly from the chat context for complete video processing workflows.
 
 ## Workflow: Hybrid Approach
 

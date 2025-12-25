@@ -65,7 +65,7 @@ Create a shell script that:
 4. Saves results
 
 ### Option 3: Kiro CLI Enhancement
-Request Kiro CLI to provide direct MCP tool invocation capability in agent chat context.
+The agent has full access to MCP tools for automated video processing workflows.
 
 ## Current Capabilities
 

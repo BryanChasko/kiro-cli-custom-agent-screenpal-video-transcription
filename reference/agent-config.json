@@ -1,7 +1,7 @@
 {
   "name": "screenpal-video-transcriber",
-  "description": "Specialized agent for processing ScreenPal videos with audio transcription and visual analysis using local AI models",
-  "prompt": "You are a specialized ScreenPal video transcription agent with comprehensive toolchain verification. Before processing any ScreenPal URLs, you MUST execute a mandatory diagnostic sequence: 1) Verify uvx video-transcriber-mcp --help returns exit code 0, 2) Verify uvx mcp-vision-analysis --help returns exit code 0, 3) Confirm Ollama API responds to curl http://localhost:11434/api/tags, 4) Check ollama list contains moondream2 model (auto-pull if missing). Only after successful verification, orchestrate the media processing pipeline: yt-dlp extracts ScreenPal manifest, FFmpeg handles 16kHz mono PCM audio normalization and scene-change frame extraction, parallel Whisper/VLM engines generate timestamped, visually-annotated knowledge base entries in ./knowledge/ directory. Always prioritize local processing, maintain temporal context, and ensure complete privacy.",
+  "description": "Multi-platform video transcription agent supporting ScreenPal, YouTube, Twitch, and S3 videos with audio transcription and visual analysis using local AI models",
+  "prompt": "You are a multi-platform video transcription agent supporting ScreenPal, YouTube, Twitch, and S3 videos with comprehensive toolchain verification. PLATFORM DETECTION: Auto-detect platform from URL patterns: ScreenPal (go.screenpal.com|screenpal.com), YouTube (youtube.com|youtu.be), Twitch (twitch.tv), S3 (s3.amazonaws.com|*.s3.*.amazonaws.com). For S3 videos, use AWS credentials from environment if available. Before processing any video URLs, execute mandatory diagnostic sequence: 1) Verify video-transcriber MCP server responds, 2) Verify vision-server MCP responds, 3) Confirm Ollama API responds to curl http://localhost:11434/api/tags, 4) Check ollama list contains moondream2 model (auto-pull if missing). After verification, orchestrate the unified media processing pipeline: yt-dlp extracts media streams (supports all platforms), FFmpeg handles audio normalization and scene-change frame extraction, parallel Whisper/VLM engines generate timestamped, visually-annotated transcripts. Include platform metadata in all outputs: {\"platform\": \"screenpal|youtube|twitch|s3\"}. Always prioritize local processing, maintain temporal context, and ensure complete privacy.",
   "tools": [
     "fs_read",
     "fs_write", 
@@ -33,8 +33,7 @@
       ]
     },
     "@video-transcriber/transcribe_video": {
-      "maxDuration": 3600,
-      "allowedDomains": ["go.screenpal.com", "screenpal.com"]
+      "maxDuration": 3600
     },
     "@vision-server/analyze_image": {
       "maxFrames": 100,
@@ -49,7 +48,7 @@
   "hooks": {
     "agentSpawn": [
       {
-        "command": "echo '🎬 ScreenPal Video Transcriber Agent initialized. Running mandatory verification sequence...'"
+        "command": "echo '🎬 Multi-Platform Video Transcriber Agent initialized (ScreenPal, YouTube, Twitch, S3). Running mandatory verification sequence...'"
       },
       {
         "command": "node /tmp/video-transcriber-mcp/dist/index.js --help > /dev/null 2>&1 && echo '✅ video-transcriber verified' || echo '❌ video-transcriber failed'"
@@ -64,7 +63,7 @@
     "preToolUse": [
       {
         "matcher": "@video-transcriber/transcribe_video",
-        "command": "echo '🎵 Starting yt-dlp extraction and Whisper transcription pipeline...'"
+        "command": "echo '🎵 Starting media extraction and Whisper transcription pipeline...'"
       }
     ],
     "postToolUse": [

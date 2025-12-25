@@ -73,6 +73,18 @@ This creates PNG files that vision-server tools can analyze.
 
 ## Error Prevention
 
+### CRITICAL: Tool Failures and Data Integrity
+
+**When vision analysis tools fail (Ollama error, timeout, etc.):**
+- ❌ DO NOT infer or assume visual content
+- ❌ DO NOT use descriptions from previous videos
+- ❌ DO NOT create placeholder visual data
+- ✅ STOP processing immediately
+- ✅ Report the failure to user
+- ✅ Do NOT create unified output without verified data
+
+**Why**: Inferred or cross-contaminated data corrupts the unified transcript and violates data integrity.
+
 ### Scenario: User says "I have transcript, need visuals"
 
 **WRONG APPROACH:**
@@ -105,6 +117,38 @@ This creates PNG files that vision-server tools can analyze.
 1. Extract frames from video
 2. Call @vision-server/analyze_image
 3. Return: "00:00:15 Desktop showing VS Code with Python file"
+```
+
+### Scenario: Vision analysis fails with Ollama error
+
+**WRONG APPROACH:**
+```
+1. Extract frames successfully
+2. Call @vision-server/analyze_image
+3. Ollama error occurs
+4. Infer visual descriptions based on audio
+5. Create unified output with inferred data
+6. User receives contaminated transcript
+```
+
+**RIGHT APPROACH:**
+```
+1. Extract frames successfully
+2. Call @vision-server/analyze_image
+3. Ollama error occurs (model runner crash, OOM, etc.)
+4. ATTEMPT RECOVERY:
+   - Kill Ollama process: killall ollama
+   - Wait 2 seconds
+   - Restart Ollama: open -a Ollama (macOS) or docker start ollama-screenpal
+   - Wait 5 seconds for startup
+   - Verify API: curl http://localhost:11434/api/tags
+   - Retry vision analysis once
+5. If retry fails:
+   - STOP immediately
+   - Report error to user: "Visual analysis failed after recovery attempt. Cannot create unified output without verified visual data."
+   - Provide audio transcript only
+   - Do NOT create unified output
+6. Do NOT infer or cross-contaminate with previous video data
 ```
 
 ## When Both Pipelines Are Needed

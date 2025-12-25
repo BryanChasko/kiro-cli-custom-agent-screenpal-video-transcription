@@ -1,10 +1,31 @@
-# Screenpal Video Transcriber Agent
+# Multi-Platform Video Transcriber Agent 'screenpal-video-transcriber'
 
-This repository contains a Kiro CLI custom agent specialized in processing ScreenPal video links to generate comprehensive audio transcripts and visual descriptions using local AI models.
+**TLDR**: Turn Any Video Into a Document
 
-## Warning about this flow
+This repository contains files to build and enhance an AWS Kiro CLI custom agent that takes video URLs from **ScreenPal, YouTube, Twitch, or S3** and produces a directory with audio transcription, visual analysis, and a unified markdown document.
 
-The kiro-cli custom agent video-transcriber will get confused and think it is creating an agent rather than being aware they are the agent. To avoid this, once you have the agent running, do your prompts inside a directory that does not have this repository's contents
+**Supported Platforms:**
+- **ScreenPal** - go.screenpal.com, screenpal.com
+- **YouTube** - youtube.com, youtu.be  
+- **Twitch** - twitch.tv
+- **S3** - s3.amazonaws.com, *.s3.*.amazonaws.com
+
+## Time & Credits + MCP Overview
+
+**Estimated costs**: ~90 Kiro credits to develop, ~30 credits to deploy, ~9 credits to run. Fits within the 50 credit monthly free tier, especially with claude-haiku-4.5 (0.4x credit multiplier as of January 2026).
+
+**Development time**: ~6 hours for planning and building, ~15 minutes to process a video.
+
+**MCP Servers**:
+- **video-transcriber**: Audio transcription with Whisper
+- **vision-server**: Frame analysis with Moondream2 VLM  
+- **ffmpeg-mcp**: Frame extraction with scene detection
+
+## ⚠️ Important Usage Note
+
+This repository contains agent development documentation that can confuse the screenpal-video-transcriber agent. **Run the agent from a different directory** to avoid the agent thinking it's creating an agent rather than being the agent.
+
+For production use, consider moving development documentation to a separate repository.
 
             ___
            / _ \
@@ -41,11 +62,12 @@ The kiro-cli custom agent video-transcriber will get confused and think it is cr
 
 ## Purpose
 
-The screenpal-video-transcriber agent provides a complete unified workflow:
+The screenpal-video-transcriber agent provides a complete unified workflow for any supported video platform:
 
-1. **Audio Transcription**: Extract and transcribe speech using OpenAI Whisper
-2. **Visual Analysis**: Extract video frames at scene changes and analyze with Moondream2 VLM
-3. **Unified Document**: Automatically correlate audio and visual data by timestamp
+1. **Platform Detection**: Auto-detects ScreenPal, YouTube, Twitch, or S3 from URL patterns
+2. **Audio Transcription**: Extract and transcribe speech using OpenAI Whisper
+3. **Visual Analysis**: Extract video frames at scene changes and analyze with Moondream2 VLM
+4. **Unified Document**: Automatically correlate audio and visual data by timestamp with platform metadata
 
 **Output**: Three integrated files created in `~/Downloads/video-transcripts-{timestamp}/`:
 - `{video-id}-UNIFIED.json` - Structured data combining audio segments with visual frames
@@ -54,7 +76,7 @@ The screenpal-video-transcriber agent provides a complete unified workflow:
 
 ### ⚠️ Important: Unified Workflow
 
-The agent now automatically handles all three steps in one request:
+The agent automatically handles all three steps in one request:
 1. Extracts audio and transcribes to text
 2. Extracts video frames and analyzes visuals
 3. Creates unified document correlating audio + visual by timestamp
@@ -66,7 +88,7 @@ No manual tool selection needed - just provide a ScreenPal URL.
 The agent orchestrates a unified three-stage pipeline:
 
 **Stage 1: Audio Extraction & Transcription**
-- yt-dlp extracts audio stream from ScreenPal URL
+- yt-dlp extracts audio stream from video URL (supports ScreenPal, YouTube, Twitch, S3)
 - OpenAI Whisper transcribes to timestamped text segments
 
 **Stage 2: Visual Analysis**
@@ -130,41 +152,6 @@ chmod +x setup.pl
 - **Mature Ecosystem**: Stable libraries for JSON, file handling, and HTTP operations
 - **Error Handling**: Robust error checking and reporting capabilities
 
-The agent now includes `execute_perl` tool for Perl script execution, file cleanup, and directory operations alongside the existing video processing and vision analysis capabilities.
-
-## Perl Scripts
-
-This project uses Perl scripts for system automation and configuration management. Perl provides robust text processing, system integration, and cross-platform compatibility for our video processing workflows.
-
-### Setup Script (`setup.pl`)
-
-The main setup script automates the complete installation and configuration process:
-
-```bash
-# Make executable and run
-chmod +x setup.pl
-./setup.pl
-```
-
-**What it does:**
-- Verifies Kiro CLI installation
-- Installs dependencies (yt-dlp, OpenAI Whisper, uv package manager)
-- Clones and builds MCP servers from source
-- Configures Ollama with Moondream model
-- Creates MCP configuration files
-- Sets up agent profiles
-- Performs comprehensive verification
-
-**Note**: This script was functional as of January 2026 but is not actively maintained. If you encounter issues, refer to the manual setup instructions in the documentation.
-
-### Why Perl?
-
-- **Text Processing**: Excellent for configuration file manipulation and JSON handling
-- **System Integration**: Native support for shell commands and file operations
-- **Cross-Platform**: Works consistently across macOS, Linux, and Windows
-- **Mature Ecosystem**: Stable libraries for JSON, file handling, and HTTP operations
-- **Error Handling**: Robust error checking and reporting capabilities
-
 The agent includes `execute_bash` tool for shell command execution, file cleanup, and directory operations alongside the existing video processing and vision analysis capabilities.
 
 ### Prerequisites
@@ -173,6 +160,7 @@ The agent includes `execute_bash` tool for shell command execution, file cleanup
 - Node.js 16+ and npm
 - Either native Ollama or Docker
 - 4GB+ RAM, 5GB+ disk space
+- **For S3 videos**: AWS credentials in environment (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN if needed)
 
 **Note**: The setup script automatically installs yt-dlp and OpenAI Whisper dependencies.
 
@@ -191,8 +179,8 @@ The setup script will:
 4. Build MCP servers from source
 5. Setup Ollama with Moondream model
 6. Configure global MCP settings (`~/.kiro/settings/mcp.json`)
-5. Create agent profile (`~/.kiro/agents/screenpal-video-transcriber.json`)
-6. Verify all components
+7. Create agent profile (`~/.kiro/agents/screenpal-video-transcriber.json`)
+8. Verify all components
 
 ### Launch the Agent
 
@@ -208,6 +196,9 @@ kiro-cli chat --agent screenpal-video-transcriber
 
 ```
 > Please transcribe this ScreenPal video: https://go.screenpal.com/[video-id]
+> Please transcribe this YouTube video: https://youtube.com/watch?v=[video-id]
+> Please transcribe this Twitch video: https://twitch.tv/videos/[video-id]
+> Please transcribe this S3 video: https://bucket.s3.amazonaws.com/video.mp4
 ```
 
 The agent will:
@@ -247,16 +238,18 @@ Defines all available MCP servers for all agents:
     },
     "vision-server": {
       "command": "sh",
-      "args": ["-c", "node /tmp/moondream-mcp/build/index.js 1>&2"],
+      "args": ["-c", "node /tmp/moondream-mcp/build/index.js 2>/dev/null"],
       "env": {
         "OLLAMA_BASE_URL": "http://localhost:11434"
       },
       "disabled": false
     },
-    "knowledge": {
+    "ffmpeg-mcp": {
       "command": "uvx",
-      "args": ["mcp-server-knowledge"],
-      "env": {},
+      "args": ["video-creator"],
+      "env": {
+        "SCENE_THRESHOLD": "0.4"
+      },
       "disabled": false
     }
   }
@@ -273,17 +266,12 @@ Specialized configuration for this agent:
   "description": "Specialized agent for processing ScreenPal videos...",
   "includeMcpJson": true,
   "tools": [
-    "fs_read", "fs_write", "knowledge", 
+    "fs_read", "fs_write", "knowledge", "execute_bash",
     "@video-transcriber/transcribe_video",
+    "@ffmpeg-mcp/extract_frames_from_video",
+    "@ffmpeg-mcp/get_video_info",
     "@vision-server/analyze_image",
     "@vision-server/detect_objects", 
-    "@vision-server/generate_caption"
-  ],
-  "allowedTools": [
-    "fs_read", "knowledge", 
-    "@video-transcriber/get_video_info",
-    "@vision-server/analyze_image",
-    "@vision-server/detect_objects",
     "@vision-server/generate_caption"
   ],
   "model": "claude-sonnet-4"
@@ -291,15 +279,13 @@ Specialized configuration for this agent:
 ```
 
 **Key Features:**
-- `includeMcpJson: true` - Inherits all servers from global config (including `vision-server`)
-- `allowedTools` - Restricts which tools the agent can use
+- `includeMcpJson: true` - Inherits all servers from global config
+- Complete toolchain for video processing and visual analysis
 - No server duplication - All MCP servers come from global config
-
-See `docs/MCP-CONFIGURATION.md` for detailed configuration guide.
 
 ## Features
 
-- **URL Validation**: Automatic ScreenPal URL format validation
+- **URL Validation**: Automatic platform detection from URL patterns (ScreenPal, YouTube, Twitch, S3)
 - **Audio Transcription**: High-quality speech-to-text with timestamps
 - **Frame Extraction**: Scene-change detection with FFmpeg for key moments
 - **Detailed Visual Analysis**: Complete UI element descriptions including:
@@ -318,8 +304,8 @@ See `docs/MCP-CONFIGURATION.md` for detailed configuration guide.
 ### Common Issues
 
 **"dummy" tool error**: MCP server communication failure
-- **Solution**: Restart agent session: `kiro-cli chat --agent screenpal-video-transcriber`
 - **Root cause**: MCP servers not properly registering tools with Kiro CLI
+- **Solution**: Restart agent session: `kiro-cli chat --agent screenpal-video-transcriber`
 
 **Tool not found**: Missing dependencies or configuration issues  
 - **Solution**: Run setup script: `./setup.pl`
@@ -329,13 +315,9 @@ See `docs/MCP-CONFIGURATION.md` for detailed configuration guide.
 - **Solution**: Start Ollama: `ollama serve` or check Docker container
 - **Verify**: `curl -s http://localhost:11434/api/tags`
 
-**MCP Tools Not Callable**: Frame extraction and vision analysis tools not available in chat
-- **Cause**: Kiro CLI chat context doesn't provide direct MCP tool invocation
-- **Solution**: Use manual frame extraction (see MANUAL_FRAME_EXTRACTION.md)
-- **Workflow**: Extract frames manually, then agent analyzes pre-extracted frames
-
-See [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for complete troubleshooting guide.
-See [MANUAL_FRAME_EXTRACTION.md](MANUAL_FRAME_EXTRACTION.md) for frame extraction instructions.
+**Frame Extraction Issues**: Problems with scene detection or frame quality
+- **Cause**: Incorrect scene threshold or video format issues
+- **Solution**: Adjust scene_threshold parameter or verify video accessibility
 
 ## Documentation
 
@@ -347,5 +329,5 @@ See [MANUAL_FRAME_EXTRACTION.md](MANUAL_FRAME_EXTRACTION.md) for frame extractio
 
 - **Local Processing**: All transcription and analysis happens locally
 - **No Cloud APIs**: No external service dependencies
-- **Secure URLs**: Only processes validated ScreenPal domains
+- **Secure URLs**: Only processes validated platform domains (ScreenPal, YouTube, Twitch, S3)
 - **Controlled Access**: Agent permissions include video processing and visual analysis tasks
