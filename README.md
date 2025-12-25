@@ -2,6 +2,10 @@
 
 This repository contains a Kiro CLI custom agent specialized in processing ScreenPal video links to generate comprehensive audio transcripts and visual descriptions using local AI models.
 
+## Warning about this flow
+
+The kiro-cli custom agent video-transcriber will get confused and think it is creating an agent rather than being aware they are the agent. To avoid this, once you have the agent running, do your prompts inside a directory that does not have this repository's contents
+
             ___
            / _ \
           | / \ |
