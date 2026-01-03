@@ -154,7 +154,30 @@ The agent includes `execute_bash` tool for shell command execution, file cleanup
 - Node.js 16+ and npm
 - Either native Ollama or Docker
 - 4GB+ RAM, 5GB+ disk space
-- **For S3 videos**: AWS credentials in environment (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN if needed)
+- ### Secure Authentication Setup
+
+**Option 1: GitHub CLI (Recommended for local development)**
+```bash
+# Authenticate with GitHub CLI
+gh auth login
+
+# Setup secure token access
+./scripts/setup-github-token.sh
+
+# Use secure authentication
+./scripts/docker-auth-secure.sh
+```
+
+**Option 2: AWS Parameter Store (Recommended for production)**
+```bash
+# Store token securely in AWS Parameter Store
+./scripts/store-github-token-aws.sh ghp_your_token_here
+
+# Use secure authentication
+./scripts/docker-auth-secure.sh
+```
+
+**For S3 videos**: AWS credentials in environment (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN if needed)
 
 **Note**: The setup script automatically installs yt-dlp and OpenAI Whisper dependencies.
 
