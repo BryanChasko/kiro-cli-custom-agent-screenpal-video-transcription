@@ -1,7 +1,7 @@
 {
   "name": "screenpal-video-transcriber",
-  "description": "Multi-platform video transcription agent supporting ScreenPal, YouTube, Twitch, and S3 videos with audio transcription and visual analysis using local AI models",
-  "prompt": "You are a multi-platform video transcription agent supporting ScreenPal, YouTube, Twitch, and S3 videos with comprehensive toolchain verification. PLATFORM DETECTION: Auto-detect platform from URL patterns: ScreenPal (go.screenpal.com|screenpal.com), YouTube (youtube.com|youtu.be), Twitch (twitch.tv), S3 (s3.amazonaws.com|*.s3.*.amazonaws.com). For S3 videos, use AWS credentials from environment if available. Before processing any video URLs, execute mandatory diagnostic sequence: 1) Verify video-transcriber MCP server responds, 2) Verify vision-server MCP responds, 3) Confirm Ollama API responds to curl http://localhost:11434/api/tags, 4) Check ollama list contains moondream2 model (auto-pull if missing). After verification, orchestrate the unified media processing pipeline: yt-dlp extracts media streams (supports all platforms), FFmpeg handles audio normalization and scene-change frame extraction, parallel Whisper/VLM engines generate timestamped, visually-annotated transcripts. Include platform metadata in all outputs: {\"platform\": \"screenpal|youtube|twitch|s3\"}. Always prioritize local processing, maintain temporal context, and ensure complete privacy.",
+  "description": "You are a specialized devops engineer enabling video analysis and transcriptions via agentic tools including MCP and RAG. CRITICAL WORKFLOW: 1) Use @video-transcriber/transcribe_video for audio requests - transcribing the audio from a video.  visual requests are handled by other parts of the architecture. See the docs before you start writing commands and work in reality. 2) For visual analysis: Call @ffmpeg-mcp/get_video_info, then @ffmpeg-mcp/extract_frames_from_video with scene_threshold=0.4 to extract actual PNG frames. 3) For EACH extracted frame, call @vision-server/analyze_image with prompt: 'Describe speaker outfit if not previously described, presentation setting, all UI elements, buttons, text, menus, and visual content visible on screen. Include exact text, button labels, window titles, and interface details.' 4) Analyze frames in sequence to capture visual changes. 5) Generate detailed output with frame-by-frame visual descriptions including exact UI text and element details. 6) Save complete analysis to /Users/bryanchasko/Downloads/video-transcripts/ with timestamp correlations. Output must include: frame number, timestamp, exact visual description with all readable text and UI elements. CRITICAL: NEVER use manual commands, bash scripts, or direct tool execution. ONLY use MCP tools unless you confirm I want otherwise. Do not remove logic without human approval. If MCP tools fail, report the failure and stop - do NOT attempt manual workarounds. Leverage Multimodal ingestion and narrative synthesis agents for  video workflows.",
+  "prompt": "Impliment tracing and leverage the trace observability at all steps. Use agentic tooling to extract audio and visual transcripts from video links / files, normalize and organize them, and generate deaf / blind accessible narrative summaries.",
   "tools": [
     "fs_read",
     "fs_write", 
@@ -11,19 +11,66 @@
     "@video-transcriber/get_video_info",
     "@vision-server/analyze_image",
     "@vision-server/detect_objects",
-    "@vision-server/generate_caption"
+    "@vision-server/generate_caption",
+    "@filesystem-mcp/read_file",
+    "@filesystem-mcp/write_file",
+    "everything-mcp"
   ],
   "allowedTools": [
     "fs_read",
     "fs_write",
     "knowledge",
-    "@video-transcriber/transcribe_video",
-    "@video-transcriber/extract_audio", 
-    "@video-transcriber/get_video_info",
-    "@vision-server/analyze_image",
-    "@vision-server/detect_objects",
-    "@vision-server/generate_caption"
+    "@video-transcriber/*",
+    "@vision-server/*",
+    "@filesystem-mcp/*",
+    "@everything-mcp/*"
   ],
+  "mcpServers": {
+    "video-transcriber": {
+      "command": "node",
+      "args": ["/tmp/video-transcriber-mcp/dist/index.js"],
+      "env": {
+        "WHISPER_MODEL": "base",
+        "YOUTUBE_FORMAT": "bestaudio",
+        "WHISPER_DEVICE": "cpu"
+      },
+      "timeout": 300000,
+      "disabled": false
+    },
+    "vision-server": {
+      "command": "node",
+      "args": ["/tmp/moondream-mcp/build/index.js"],
+      "env": {
+        "OLLAMA_BASE_URL": "http://localhost:11434"
+      },
+      "timeout": 180000,
+      "disabled": false
+    },
+    "filesystem-mcp": {
+      "command": "docker",
+      "args": [
+        "run", "--rm",
+        "-v", "/Users/bryanchasko/Downloads/kiro-videos:/mnt",
+        "filesystem-mcp"
+      ],
+      "env": {
+        "ROOT_DIR": "/mnt",
+        "DEBUG": "false"
+      }
+    },
+    "everything-mcp": {
+      "command": "docker",
+      "args": [
+        "run", "--rm",
+        "-v", "/Users/bryanchasko/Downloads/kiro-videos:/mnt",
+        "everything-mcp"
+      ],
+      "env": {
+        "ROOT_DIR": "/mnt",
+        "DEBUG": "false"
+      }
+    }
+  },
   "toolsSettings": {
     "fs_write": {
       "allowedPaths": [
@@ -73,6 +120,6 @@
       }
     ]
   },
-  "includeMcpJson": true,
-  "model": "claude-sonnet-4"
+  "includeMcpJson": false,
+  "useLegacyMcpJson": false
 }

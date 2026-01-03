@@ -7,3 +7,10 @@ logs/
 __pycache__/
 *.pyc
 node_modules/
+
+# Kiro CLI chat history and conversation backups
+.kiro/kiro-cli-agent-chat-history/
+
+# Environment variables and secrets
+.env
+.env.local
