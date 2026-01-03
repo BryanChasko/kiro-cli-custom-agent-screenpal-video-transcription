@@ -19,6 +19,12 @@
       },
       "timeout": 180000,
       "disabled": false
+    },
+    "text-processing-mcp": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-text-processing"],
+      "timeout": 30000,
+      "disabled": false
     }
   }
 }
