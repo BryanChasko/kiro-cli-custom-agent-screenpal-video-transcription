@@ -16,6 +16,37 @@ Visual Pipeline: ffmpeg-mcp → Frame extraction → vision-server → UI descri
 Narrative Synthesis: text-tools-mcp → Unified markdown document
 ```
 
+## Security & Authentication
+
+### Secure GitHub Token Management
+
+**GitHub CLI Integration (Recommended for local development)**:
+```bash
+# Authenticate with GitHub CLI
+gh auth login
+
+# Setup secure token access
+./scripts/setup-github-token.sh
+
+# Use secure authentication for Docker
+./scripts/docker-auth-secure.sh
+```
+
+**AWS Parameter Store (Production environments)**:
+```bash
+# Store token securely in AWS Parameter Store
+./scripts/store-github-token-aws.sh ghp_your_token_here
+
+# Use secure authentication
+./scripts/docker-auth-secure.sh
+```
+
+**Security Features**:
+- No hardcoded tokens in repository
+- Encrypted storage using AWS KMS or GitHub CLI
+- Automatic token rotation support
+- Environment-specific configuration
+
 ## Configuration Details
 
 ### Agent Profile Location
@@ -161,6 +192,11 @@ Output: Unified document with synchronized audio-visual narrative
 }
 ```
 
+**Authentication Requirements**:
+- GitHub Container Registry access for MCP Docker images
+- Use `./scripts/docker-auth-secure.sh` for secure authentication
+- Supports both GitHub CLI and AWS Parameter Store token management
+
 ### Environment Configuration
 - **Video Transcriber**: Whisper base model, CPU processing
 - **Vision Server**: Ollama base URL `http://localhost:11434`
@@ -218,6 +254,8 @@ Examples:
 - **No Cloud APIs**: No external service dependencies beyond MCP servers
 - **Secure URLs**: Only processes validated platform domains
 - **Controlled Access**: Agent permissions limited to video processing tasks
+- **Token Security**: GitHub tokens managed via CLI or AWS Parameter Store
+- **No Hardcoded Secrets**: All authentication uses secure external sources
 
 ### Accessibility Focus
 - **Deaf Users**: Complete visual descriptions of UI elements, text, controls
