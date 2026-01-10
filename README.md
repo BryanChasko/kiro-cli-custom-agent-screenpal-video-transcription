@@ -4,6 +4,37 @@
 
 This repository contains files to build and enhance an AWS Kiro CLI custom agent that takes video URLs from **S3, ScreenPal, YouTube, or Twitch** and produces a directory with audio transcription, visual analysis, and a unified markdown document.
 
+## Kiro CLI Architecture Integration
+
+This agent follows the **three-layer Kiro CLI architecture**:
+
+### Layer 1: Steering Documents (`~/.kiro/steering/`)
+**Governance and Standards** - Loaded directly into agent reasoning context:
+- Code style conventions (named functions, JSDoc requirements)
+- JavaScript safety standards (type safety, defensive programming)
+- MCP health standards (server reliability, timeout management)
+- Video processing standards (quality thresholds, format validation)
+
+### Layer 2: Knowledge Base (`~/.kiro/knowledge_bases/screenpal-video-transcriber/`)
+**Domain-Specific Reference** - Queried via `/knowledge search`:
+- Video processing workflows and examples
+- Platform-specific API documentation
+- Troubleshooting guides and best practices
+- MCP server configuration patterns
+
+### Layer 3: Live Context Injection (Context7)
+**Real-Time Documentation** - Triggered via `use context7`:
+- Latest official documentation from source
+- Fresh API references and examples
+- Current installation and setup procedures
+- Live troubleshooting and error resolution
+
+**Why This Matters**:
+- Steering docs ensure consistent, safe video processing
+- Knowledge base provides searchable reference materials
+- Context7 delivers fresh documentation for fast-moving domains
+- Clean separation prevents context pollution while ensuring accuracy
+
 ## Time & Credits + MCP Overview
 
 **Estimated costs**: ~Took about 90 Kiro credits to develop, ~I recommend 30 credits to deploy, as I haven't tested redeploying. ~Takes about 3 credits to create a document from a short video, haven't experimented with a longer video. Fits within the 50 credit monthly free tier, especially with claude-haiku-4.5 (0.4x credit multiplier as of January 2026).
