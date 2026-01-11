@@ -46,49 +46,14 @@ The agent CAN invoke all configured MCP tools directly to:
 3. Call vision-server tools for frame analysis
 4. Execute MCP server commands
 
-## Recommended Solution
-
-### Option 1: Manual Frame Extraction (User-Executed)
-```bash
-# User runs these commands manually
-yt-dlp -f best -o video.mp4 https://go.screenpal.com/watch/cTlX2ZnYYZo
-ffmpeg -i video.mp4 -filter:v "select='gt(scene,0.4)'" -vsync vfr frames/frame_%04d.png
-
-# Then agent can analyze pre-extracted frames
-```
-
-### Option 2: External Script Execution
-Create a shell script that:
-1. Downloads video with yt-dlp
-2. Extracts frames with FFmpeg
-3. Calls agent to analyze frames
-4. Saves results
-
-### Option 3: Kiro CLI Enhancement
-The agent has full access to MCP tools for automated video processing workflows.
-
-## Current Capabilities
-
-The agent CAN:
-- ✅ Transcribe audio from ScreenPal videos
-- ✅ Create analysis templates and structures
-- ✅ Analyze pre-extracted image files
-- ✅ Manage file I/O and knowledge base
-- ✅ Provide detailed instructions for manual processes
-
-The agent CANNOT:
-- ❌ Extract frames from video URLs
-- ❌ Invoke FFmpeg directly
-- ❌ Call vision-server tools
-- ❌ Execute MCP commands
-
 ## Updated Workflow
 
 ### For Complete Visual Analysis
 
 **Step 1: User executes frame extraction**
 ```bash
-yt-dlp -f best -o video.mp4 https://go.screenpal.com/watch/cTlX2ZnYYZo
+yt-dlp -f best -o video.mp4 https://video.url/here
+
 ffmpeg -i video.mp4 -filter:v "select='gt(scene,0.4)'" -vsync vfr frames/frame_%04d.png
 ```
 
@@ -99,7 +64,7 @@ Agent: Analyze frames in frames/ directory with detailed UI descriptions
 
 **Step 3: Agent saves results**
 ```
-Agent: Save analysis to /Users/bryanchasko/Downloads/video-transcripts/cTlX2ZnYYZo-visual-analysis.json
+Agent: Save analysis to /Users/bryanchasko/Downloads/project-folder/cTlX2ZnYYZo-visual-analysis.json
 ```
 
 ## Documentation Updates Required
