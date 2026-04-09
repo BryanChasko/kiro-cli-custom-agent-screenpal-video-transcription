@@ -1,5 +1,7 @@
 # Multi-Platform Video Transcriber Agent 'screenpal-video-transcriber'
 
+> **this project has evolved** — the video transcription pipeline now runs as a 5-stage headless pipeline in [goose-cli-video-transcription-recipe](https://github.com/chasko-labs/goose-cli-video-transcription-recipe). that repo has parallel gpu stages, jaeger tracing, batch mode, resume, and firecracker microvm dispatch. this repo is preserved as the original kiro-cli implementation.
+
 **TLDR**: Turn Any Video Into a Document
 
 This repository contains files to build and enhance an AWS Kiro CLI custom agent that takes video URLs from **S3, ScreenPal, YouTube, or Twitch** and produces a directory with audio transcription, visual analysis, and a unified markdown document.
